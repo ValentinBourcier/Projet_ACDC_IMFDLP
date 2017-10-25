@@ -10,7 +10,7 @@ import java.util.Date;
 import javax.xml.crypto.dsig.DigestMethod;
 
 /**
- * Classe qui représnte un noeud de l'arbre
+ * Classe qui représente un noeud de l'arbre
  * 
  * @author valentin
  */
@@ -25,8 +25,6 @@ public class FileNode extends File{
     public FileNode(File file) {
         super(file.getAbsolutePath());
         this.hash = hash("MD5");
-        System.out.println(file.getAbsolutePath());
-
     }
 
     /**

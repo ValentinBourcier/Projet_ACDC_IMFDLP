@@ -5,7 +5,7 @@ import java.util.ArrayList;
 import java.util.Date;
 
 /**
- * Classe définissant un filtre de recherche
+ * Class defining a file filter
  * 
  * @author valentin
  */
@@ -15,23 +15,24 @@ public class Filter implements FileFilter{
     private boolean weightGt;
     private boolean weightLw;
     private ArrayList<String> extensions;
-    private Date modification;
+    private long date;
+    private boolean dateGt;
+    private boolean dateLw;
     private String name;
     private boolean directory;
     
     /**
-     * Initialisation du filtre
+     * Filter initialisation
      */
     public Filter(){
         this.extensions = new ArrayList<>();
-        this.modification = null;
         this.name = null;
         this.directory = true;
     }
     
     /**
-     * Méthode qui permet de valider ou non la correspondance d'un fichier avec le filtre
-     * @return True si le fichier est valide, false sinon.
+     * Method checking the correspondance of a file with the filter
+     * @return True if the file is valid false ether.
      */
     @Override
     public boolean accept(File file) {
@@ -49,17 +50,22 @@ public class Filter implements FileFilter{
             accept = (accept && file.length() == weight);
         }
         
-        if(!extensions.isEmpty()){
+        if(this.dateGt && this.date > 0){
+            accept = (accept && file.lastModified() > date);
+        }else if(this.dateLw && this.date > 0){
+            accept = (accept && file.lastModified() < date);
+        }else if(this.date > 0){
+            accept = (accept && file.lastModified() == date);
+        }
+        
+        if(!extensions.isEmpty() && !file.isDirectory()){
             String extension = "";
             int i = file.getName().lastIndexOf('.');
             if (i > 0) {
                 extension = file.getName().substring(i+1);
             }
             accept = (extensions.contains(extension));
-        }
-        if(this.modification != null){
-            accept = (accept && this.modification == new Date(file.lastModified()));
-        }
+        }  
         if(this.name != null){
             accept = (accept && file.getName().contains(this.name));
         }
@@ -78,7 +84,7 @@ public class Filter implements FileFilter{
      * Permet d'ajouter une contrainte de correspondance avec le poids du fichier
      * @param weight Poids qui doit etre égal à celui du fichier
      */
-    public void weightEquals(long weight){
+    public void weightEq(long weight){
         this.weight = weight;
         this.weightGt = false;
         this.weightLw = false;
@@ -86,7 +92,7 @@ public class Filter implements FileFilter{
     
     /**
      * Permet d'ajouter une contrainte de correspondance avec le poids du fichier
-     * @param weight Poids qui doit etre supérieur à celui le fichier
+     * @param weight Poids qui doit etre inférieur à celui le fichier
      */
     public void weightGt(long weight){
         this.weight = weight;
@@ -96,7 +102,7 @@ public class Filter implements FileFilter{
     
     /**
      * Permet d'ajouter une contrainte de correspondance avec le poids du fichier
-     * @param weight Poids qui doit etre inférieur à celui le fichier
+     * @param weight Poids qui doit etre supérieur à celui le fichier
      */
     public void weightLw(long weight){
         this.weight = weight;
@@ -116,13 +122,36 @@ public class Filter implements FileFilter{
      * Correspondance avec la date de modification du fichier
      * @param date Dernière date de modification du fichier
      */
-    public void modification(Date date){
-        this.modification = date;
+    public void dateEq(Date date){
+        this.date = date.getTime();
+        this.dateGt = false;
+        this.dateLw = false;
     }
     
     /**
-     * Indique si le filtre doit accepter d'explorer les sous-dossiers ou non
-     * @param accept True si il faut parcourir les sous dossiers false sinon.
+     * Correspondance avec la date de modification du fichier
+     * @param date Dernière date de modification du fichier
+     */
+    public void dateGt(Date date){
+        this.date = date.getTime();
+        this.dateGt = true;
+        this.dateLw = false;
+    }
+    
+    /**
+     * Correspondance avec la date de modification du fichier
+     * @param date Dernière date de modification du fichier
+     */
+    
+    public void dateLw(Date date){
+        this.date = date.getTime();
+        this.dateGt = false;
+        this.dateLw = true;
+    }
+    
+    /**
+     * Indique si le filtre doit valider ou non les dossiers
+     * @param accept True si il faut effectuer des vérifications sur les dossiers false sinon.
      */
     public void acceptDirectory(boolean accept){
         this.directory = accept;
