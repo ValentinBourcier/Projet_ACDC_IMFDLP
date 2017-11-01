@@ -1,3 +1,4 @@
+package Version2;
 
 import java.io.File;
 import java.io.FileFilter;
@@ -28,6 +29,8 @@ public class Filter implements FileFilter{
         this.extensions = new ArrayList<>();
         this.name = null;
         this.directory = true;
+        this.date = 0;
+        this.weight = 0;
     }
     
     /**
@@ -155,6 +158,14 @@ public class Filter implements FileFilter{
      */
     public void acceptDirectory(boolean accept){
         this.directory = accept;
+    }
+    
+    /**
+     * Indique si le filtre est actif ou non
+     * @return True si le filtre est actif, false sinon
+     */
+    public boolean isActive() {
+        return this.extensions.isEmpty() == false || this.name != null || this.directory == false || this.date != 0 || this.weight != 0;
     }
     
 }
