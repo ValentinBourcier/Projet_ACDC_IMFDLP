@@ -1,4 +1,3 @@
-package Version2;
 
 import com.sun.corba.se.impl.protocol.giopmsgheaders.Message;
 import java.io.File;
