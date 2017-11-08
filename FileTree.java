@@ -1,5 +1,3 @@
-package Version2;
-
 import java.io.File;
 import java.io.FileFilter;
 import java.util.ArrayList;
@@ -23,7 +21,6 @@ public class FileTree{
     
     private DefaultMutableTreeNode root;
     private FileNode fileRoot;
-    private HashMap<String, Object> duplicates;
     
     /**
      * Constructeur de l'arbre
@@ -33,7 +30,6 @@ public class FileTree{
     public FileTree(String path) {
         this.root = new DefaultMutableTreeNode(new FileNode(path));
         this.fileRoot = new FileNode(path);
-        this.duplicates = new HashMap<>();
     }
     
     
@@ -73,40 +69,6 @@ public class FileTree{
            tree = tree + (node.isLeaf() ? "  - " : "+ ") + path[path.length - 1] + "\n";
         }
         return tree; 
-    }
-    
-    public void searchDuplicates(){
-        Enumeration<DefaultMutableTreeNode> en = this.root.preorderEnumeration();
-        while (en.hasMoreElements())
-        {
-            DefaultMutableTreeNode node = en.nextElement();
-            FileNode element = ((FileNode) node.getUserObject());
-            if(element.getValue().isFile()){
-                String hash = element.getHash();
-                Object file = (Object) this.duplicates.get(hash);
-                if (file == null){
-                    this.duplicates.put(hash, element);
-                }else if(file instanceof ArrayList){
-                   ((ArrayList) file).add(element);
-                }else{
-                    ArrayList<Object> duplicated = new ArrayList<>();
-                    duplicated.add((Object) element);
-                    duplicated.add(file);
-                    this.duplicates.put(hash, duplicated);
-                }
-            }
-        }
-        
-    }
-    
-    public ArrayList<FileNode> getDuplicates(){
-        ArrayList<FileNode> duplicated = new ArrayList<>();
-        for (Object item : this.duplicates.values()) {
-            if(item instanceof ArrayList){
-                duplicated.addAll((ArrayList<FileNode>) item);
-            }
-        }
-        return duplicated;
     }
     
     
