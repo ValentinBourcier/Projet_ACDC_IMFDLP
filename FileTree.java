@@ -1,63 +1,147 @@
 import java.io.File;
-import java.io.FileFilter;
-import java.util.ArrayList;
+import java.nio.file.Path;
+import java.nio.file.Paths;
 import java.util.Enumeration;
-import java.util.HashMap;
 import java.util.List;
-import javax.swing.tree.DefaultMutableTreeNode;
-import java.util.concurrent.Callable;
-import java.util.concurrent.ExecutionException;
+import java.util.Map;
 import java.util.concurrent.Executors;
 import java.util.concurrent.Future;
-import java.util.concurrent.ThreadPoolExecutor;
+import javax.swing.tree.DefaultMutableTreeNode;
+import javax.swing.tree.DefaultTreeModel;
+import javax.swing.tree.TreeModel;
 import javax.swing.tree.TreeNode;
 
 /**
- * Classe qui permet de représenter une arborescence de fichier
+ * Class which represent the file system Tree.
  * 
  * @author valentin
  */
-public class FileTree{
+public class FileTree implements Analyzer{
     
     private DefaultMutableTreeNode root;
-    private FileNode fileRoot;
+    private CacheManager cache;
     
     /**
-     * Constructeur de l'arbre
-     * @param path Chemin du la racine
-     * @param filter Filtre associé à la création de l'arbre
+     * Tree builder
      */
-    public FileTree(String path) {
-        this.root = new DefaultMutableTreeNode(new FileNode(path));
-        this.fileRoot = new FileNode(path);
+    public FileTree() {
+        this.cache = CacheManager.getInstance();
+        this.root = new DefaultMutableTreeNode();
     }
     
-    
     /**
-     * Méthode qui permet de récupérer l'arbre par sa racine
-     * @return La racine de l'arbre
+     * Method allowing to get the tree root
+     * @return A DefaultMutableTreeNode corresponding to the tree root
      */
     public DefaultMutableTreeNode getRoot(){
         return this.root;
     }
     
     /**
-     * Méthode qui permet de récupérer le fichier à la racine de l'arbre
-     * @return L'objet FileNode qui correspond à la racine de l'arbre
+     * Method returning the FileNode contained on the indicated DefaultMutableTreeNode
+     * @param path A string representation of the node path in the tree
+     * @return FileNode contained by the node in argument
      */
-    public FileNode getFileRoot(){
-        return this.fileRoot;
+    public FileNode getFileNode(String path){
+        return getFileNode(getChildByPath(path));
     }
     
     /**
-     * Méthode qui permet de connaitre la profondeur de l'arbre
-     * @return L'entier correspondant à la profondeur de l'arbre
+     * Method returning the FileNode contained on the indicated DefaultMutableTreeNode
+     * @param node A DefaultMutableTreeNode containing a FileNode
+     * @return FileNode contained by the node in argument
+     */
+    public synchronized FileNode getFileNode(DefaultMutableTreeNode node){
+        return (FileNode) node.getUserObject();
+    }
+    
+    /**
+     * Method returning the tree depth
+     * @return An Integer representing the max depth on the tree
      */
     public int getDepth(){
         return this.root.getDepth();
     }
     
+    /**
+     * Method getting a node from his path on the tree
+     * Exemple: if root path is: "/home/", path could be "/home/session/"
+     * @param path The string representation of the node path searched
+     * @return The node in tree corresponding to the path.
+     */
+    public DefaultMutableTreeNode getChildByPath(String path){
+        DefaultMutableTreeNode node = this.root;
+        Enumeration<DefaultMutableTreeNode> en = node.preorderEnumeration();
+        String[] nodePath = path.split(File.separator);
+        String rootName = ((FileNode) this.root.getUserObject()).getName();
+        String pathRoot = nodePath[0].equals("") ? nodePath[1] : nodePath[0];
+        if(!rootName.equals(pathRoot)){
+            throw new IllegalArgumentException("Child path should begin on tree root.");
+        }
+        int cpt = nodePath[0].equals("") ? 1 : 0;
+        while (en.hasMoreElements() && cpt < nodePath.length) {
+            DefaultMutableTreeNode tmp = en.nextElement();
+            if(!tmp.isLeaf()){
+                TreeNode[] tmpPath = tmp.getPath();
+                String name = tmpPath[tmpPath.length - 1].toString();
+                if (name.equals(nodePath[cpt])) {
+                    node = tmp;
+                    cpt++;
+                }
+            }
+        }
+        if(rootName.equals(pathRoot) && node.equals(this.root)){
+            throw new IllegalArgumentException("Path cannot be verified by the tree.");
+        }
+        return node;
+    }
+    
+    
+    /**
+     * Method allowing to get the weight of a tree/sub-tree, from a node path
+     * @return The number of Bytes reprenseting the weight of the node.
+     */
+    public long getWeight(String path){
+        return getWeight(getChildByPath(path));
+    }
+    
+    /**
+     * Method getting the weight of a tree/sub-tree
+     * @return The number of Bytes reprenseting the weight of the node.
+     */
+    public long getWeight(DefaultMutableTreeNode node){
+        long size = 0;
+        Enumeration<DefaultMutableTreeNode> en = node.preorderEnumeration();
+        while (en.hasMoreElements()) {
+            DefaultMutableTreeNode next = en.nextElement();
+            FileNode file = ((FileNode) next.getUserObject());
+            if(file.isFile()){
+                size += file.length();
+            }
+        }
+        return size;
+    }
+    
+    
+    /**
+     * Method deleting empty folders
+     */
+    public void cleanFolders() {
+        Enumeration<DefaultMutableTreeNode> en = this.root.breadthFirstEnumeration();
+        while (en.hasMoreElements()) {
+            DefaultMutableTreeNode node = en.nextElement();
+            if (node.getUserObject() instanceof File && ((File) node.getUserObject()).length() == 0 && node.isLeaf()) {
+                node.removeAllChildren();
+                node.removeFromParent();
+                en = this.root.breadthFirstEnumeration();
+            }
 
+        }
+    }
+    
+    /**
+     * String representation of the file tree
+     */
     @Override
     public String toString() {
         Enumeration<DefaultMutableTreeNode> en = this.root.preorderEnumeration();
@@ -70,18 +154,76 @@ public class FileTree{
         }
         return tree; 
     }
-    
-    
-    public void cleanFolders() {
-        Enumeration<DefaultMutableTreeNode> en = this.root.breadthFirstEnumeration();
-        while (en.hasMoreElements()) {
-            DefaultMutableTreeNode node = en.nextElement();
-            if (node.getUserObject() instanceof File && ((File) node.getUserObject()).length() == 0 && node.isLeaf()) {
-                node.removeAllChildren();
-                node.removeFromParent();
-                en = this.root.breadthFirstEnumeration();
-            }
 
+    @Override
+    public Map<String, List<File>> getDuplicates(String path, Filter filter) {
+        cache.unserialize();
+        DuplicatesFinder finder = new DuplicatesFinder(Paths.get(path), filter);
+        Future<Map<String, List<File>>> duplicated = Executors.newFixedThreadPool(1).submit(finder);
+        try{
+            cache.serialize();
+            return duplicated.get();
+        }catch(Exception error){
+            return null;
         }
+    }
+
+    @Override
+    public Map<String, List<File>> getDuplicates(DefaultMutableTreeNode node, Filter filter) {
+        return getDuplicates(getFileNode(node).getAbsolutePath(), filter);
+    }
+
+    @Override
+    public TreeModel getTreeModel() {
+        return new DefaultTreeModel(root);
+    }
+
+    public void buildFileTree(String rootPath, Filter filter, Boolean hash, Boolean recordInCache){
+        Path path = Paths.get(rootPath);
+        this.unserializeCache();
+        this.root = new DefaultMutableTreeNode(new FileNode(rootPath));
+        FileTreeFactory factory = new FileTreeFactory(path, this.root, filter, hash, recordInCache);
+        Future<DefaultMutableTreeNode> result = Executors.newSingleThreadExecutor().submit(factory);
+        try{
+            this.root = result.get();
+            
+        }catch(Exception error){
+            error.printStackTrace();
+            System.out.println("FileTree building failed");
+        }
+        if(filter.isActive()){
+            this.cleanFolders();
+        }
+        cache.serialize();
+    }
+    
+    public void buildFileTree(String rootPath, Boolean hash, Boolean recordInCache){
+        buildFileTree(rootPath, new Filter(), hash, recordInCache);
+    }
+    
+    public void listenSystemChanges(int millisRefresh){
+        SystemListener.SYSTEM_LISTENER.registerTree(this);
+        SystemListener.SYSTEM_LISTENER.setDelay(millisRefresh);
+        Thread listener = new Thread(SystemListener.SYSTEM_LISTENER);
+        listener.start();
+    }
+    
+
+    @Override
+    public void deleteNode(String path) {
+        deleteNode(getChildByPath(path));
+    }
+
+    @Override
+    public void deleteNode(DefaultMutableTreeNode node) {
+        Enumeration<DefaultMutableTreeNode> en = node.preorderEnumeration();
+        while (en.hasMoreElements()) {
+            DefaultMutableTreeNode nextNode = en.nextElement();
+            if(nextNode.isLeaf()){
+                cache.remove(getFileNode(node).getAbsolutePath());
+            }
+        }
+        node.removeAllChildren();
+        node.removeFromParent();
     }
 }

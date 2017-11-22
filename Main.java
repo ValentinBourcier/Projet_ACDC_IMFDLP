@@ -1,5 +1,6 @@
-
-
+import java.io.File;
+import java.util.List;
+import java.util.Map;
 /**
  * Lancement de tests
  * 
@@ -7,12 +8,14 @@
  */
 public class Main {
     public static void main(String[] args) {
-//        FileTree tree = FileTreeFactory.createFileTree("/home/valentin/files/");
-//        tree.searchDuplicates();
-//        for (FileNode file: tree.getDuplicates()) {
-//            System.out.println("Duplicata: " + file.getValue().getAbsolutePath());
-//        }
-        DuplicatesFinder finder = DuplicatesFinder.searchDuplicates("/home/valentin/", new Filter());
+        Analyzer analyzer = new FileTree();
+        analyzer.buildFileTree("/home/valentin/", false, true);
+        Map<String, List<File>> dup = analyzer.getDuplicates("/home/valentin/Tests", new Filter());
+        for (String hash : dup.keySet()) {
+            for (File file: dup.get(hash)) {
+                System.out.println(file.getAbsolutePath());
+            }
+        }
         System.exit(0);
         
     }

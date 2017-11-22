@@ -1,20 +1,11 @@
-
 import java.io.File;
 import java.io.IOException;
 import java.nio.file.FileVisitResult;
 import java.nio.file.FileVisitor;
 import java.nio.file.Files;
 import java.nio.file.Path;
-import java.nio.file.Paths;
 import java.nio.file.attribute.BasicFileAttributes;
-import java.util.ArrayList;
-import java.util.Comparator;
-import java.util.List;
 import java.util.concurrent.Callable;
-import java.util.concurrent.ExecutionException;
-import java.util.concurrent.Executors;
-import java.util.concurrent.Future;
-import java.util.concurrent.ThreadPoolExecutor;
 import javax.swing.tree.DefaultMutableTreeNode;
 
 /**
@@ -23,44 +14,34 @@ import javax.swing.tree.DefaultMutableTreeNode;
  */
 public class FileTreeFactory implements FileVisitor<Path>, Callable{
     
-    public FileTree tree;
+    public static DefaultMutableTreeNode root;
     private DefaultMutableTreeNode currentNode;
     private Filter filter;
     private final Path rootPath;
-    private List<Future<FileTree>> results;
-     
-    private static class ExecutorManager
-    {		
-        public static int MAX_THREADS = 3;
-        public static int NB_THREADS = 0;
-        private static ThreadPoolExecutor EXECUTOR = (ThreadPoolExecutor) Executors.newCachedThreadPool();
-    }
-
-    public static ThreadPoolExecutor getExecutorInstance()
-    {
-        return ExecutorManager.EXECUTOR;
-    }
+    private CacheManager cache;
+    private Boolean hash;
+    public Boolean recordInCache = true;
     
-    public FileTreeFactory(Path rootPath, Filter filter) {
+    public FileTreeFactory(Path rootPath, DefaultMutableTreeNode root, Filter filter, Boolean hash, Boolean recordInCache) {
         this.filter = filter;
-        this.tree = null;
+        this.root = root;
+        this.currentNode = this.root;
         this.rootPath = rootPath;
-        this.results = new ArrayList<>();
+        this.cache = CacheManager.getInstance();
+        this.hash = hash;
+        this.recordInCache = recordInCache;
     }
     
     @Override
     public FileVisitResult preVisitDirectory(Path dir, BasicFileAttributes attrs) throws IOException {
         if(Files.isReadable(dir)){
-            
-            if (!dir.equals(FileTreeFactory.this.rootPath)) {
-                FileTreeFactory factory = new FileTreeFactory(dir, filter);
-                Future<FileTree> result = getExecutorInstance().submit(factory);
-                results.add(result);
-                return FileVisitResult.SKIP_SUBTREE;
-            }else{
-                File directory = dir.getFileName().toFile();
-                tree = new FileTree(directory.getAbsolutePath());
-                currentNode = this.tree.getRoot();
+            if (root == null) {
+                root = new DefaultMutableTreeNode(new FileNode(dir.toString()));
+                currentNode = root;
+            } else {
+                DefaultMutableTreeNode directory = new DefaultMutableTreeNode(new FileNode(dir.toString()));
+                currentNode.add(directory);
+                currentNode = directory;
             }
         }
         return FileVisitResult.CONTINUE;
@@ -68,6 +49,7 @@ public class FileTreeFactory implements FileVisitor<Path>, Callable{
  
     @Override
     public FileVisitResult postVisitDirectory(Path dir, IOException exc) throws IOException {
+        currentNode = (DefaultMutableTreeNode) currentNode.getParent();
         return FileVisitResult.CONTINUE;
     }
  
@@ -78,9 +60,20 @@ public class FileTreeFactory implements FileVisitor<Path>, Callable{
                 File file = new File(path.toString());
                 boolean isValid = filter.isActive() ? filter.accept(file) : true;
                 if(isValid){
-                    DefaultMutableTreeNode node = new DefaultMutableTreeNode(new FileNode(path.toString()));
+                    DefaultMutableTreeNode node;
+                    if(recordInCache && cache.contains(path.toString())){
+                        node = new DefaultMutableTreeNode(cache.getMoreRecent(path.toString()));
+                    }else{
+                        FileNode fileNode = new FileNode(path.toString());
+                        if(hash){
+                            fileNode.hash("MD5");
+                        }
+                        node = new DefaultMutableTreeNode(fileNode);
+                        if (recordInCache && !cache.contains(path.toString())) {
+                            cache.add(fileNode);
+                        }
+                    }
                     currentNode.add(node);
-                    currentNode = node;
                 }
             }
         }
@@ -94,37 +87,14 @@ public class FileTreeFactory implements FileVisitor<Path>, Callable{
     }
     
     @Override
-    public FileTree call() throws Exception {
+    public DefaultMutableTreeNode call() throws Exception {
         try{
             Files.walkFileTree(rootPath, this);
         }catch(IOException error){
+            error.printStackTrace();
             System.out.println("Error while creating FileTree");
-            return null;
         }
-        for (Future<FileTree> result : results) {
-            this.tree.getRoot().add(result.get().getRoot());
-        }
-        return this.tree;
-    }
-    
-    public static FileTree createFileTree(String rootPath, Filter filter){
-        Path path = Paths.get(rootPath);
-        FileTreeFactory factory = new FileTreeFactory(path, filter);
-        Future<FileTree> result = getExecutorInstance().submit(factory);
-        FileTree tree = null;
-        try{
-            tree = result.get();     
-        }catch(Exception error){
-            System.out.println("FileTree building failed");
-        }
-        if(filter.isActive()){
-            tree.cleanFolders();
-        }
-        return tree;
-    }
-    
-    public static FileTree createFileTree(String rootPath){
-        return createFileTree(rootPath, new Filter());
+        return this.root;
     }
     
 }

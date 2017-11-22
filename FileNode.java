@@ -1,57 +1,32 @@
-
-import com.sun.corba.se.impl.protocol.giopmsgheaders.Message;
 import java.io.File;
 import java.io.FileInputStream;
 import java.io.FileNotFoundException;
 import java.io.IOException;
+import java.io.Serializable;
 import java.security.DigestInputStream;
 import java.security.MessageDigest;
 import java.security.NoSuchAlgorithmException;
-import java.util.Date;
-import javax.xml.crypto.dsig.DigestMethod;
-
 /**
  * Classe qui représente un noeud de l'arbre
  * 
  * @author valentin
  */
-public class FileNode{
+public class FileNode extends File implements Serializable{
     
-    private File value;
     private String hash;
+    public static final long INSTANCE_TIME = System.currentTimeMillis();
     
     public FileNode(String path){
-        this.value = new File(path);
+        super(path);
         this.hash = null;
     }
     
-    
-    public boolean isDirectory() {
-        return false;
-    }
-
-    
-    public boolean isFile() {
-        return true;
-    }
-
-    
-    public long getWeight() {
-        return this.value.length();
-    }
-
-    
-    public File getValue() {
-        return this.value;
-    }
-    
-    
     public String hash(String algorithme){
-        if(this.value.isFile()){
+        if(this.isFile() && this.canRead()){
             DigestInputStream digest = null;
             try{
                 MessageDigest md = MessageDigest.getInstance(algorithme);
-                digest = new DigestInputStream(new FileInputStream(this.value.getAbsolutePath()), md);
+                digest = new DigestInputStream(new FileInputStream(this.getAbsolutePath()), md);
 
                 byte[] byteArray = new byte[8192];
                 int bytesCount = 0;
@@ -93,7 +68,7 @@ public class FileNode{
     }
     
     public String toString(){
-        return this.value.getName();
+        return this.getName();
     }
 
 }

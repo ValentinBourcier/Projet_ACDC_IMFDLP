@@ -1,4 +1,3 @@
-
 import java.io.File;
 import java.io.IOException;
 import java.nio.file.FileVisitResult;
@@ -8,42 +7,38 @@ import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.nio.file.attribute.BasicFileAttributes;
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 import java.util.concurrent.Callable;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.Executors;
 import java.util.concurrent.Future;
 import java.util.concurrent.ThreadPoolExecutor;
-import javax.swing.tree.DefaultMutableTreeNode;
 
+/**
+ *
+ * @author valentin
+ */
 public class DuplicatesFinder implements FileVisitor<Path>, Callable{
     
-    private static ConcurrentHashMap<String, Object> duplicates;
+    private Map<String, List<File>> duplicates;
     private Filter filter;
     private final Path rootPath;
-
-    private static class ExecutorManager
-    {		
-        public static int MAX_THREADS = 3;
-        public static int NB_THREADS = 0;
-        private static ThreadPoolExecutor EXECUTOR = (ThreadPoolExecutor) Executors.newCachedThreadPool();
-    }
-
-    public static ThreadPoolExecutor getExecutorInstance()
-    {
-        return ExecutorManager.EXECUTOR;
-    }
+    private CacheManager cache = CacheManager.getInstance();
+    private static ThreadPoolExecutor EXECUTOR = (ThreadPoolExecutor) Executors.newFixedThreadPool(1);
     
+
     public DuplicatesFinder(Path rootPath, Filter filter) {
         this.filter = filter;
         this.rootPath = rootPath;
-        this.duplicates = new ConcurrentHashMap<String, Object>();
+        this.duplicates = new HashMap<String, List<File>>();
     }
     
     @Override
     public FileVisitResult preVisitDirectory(Path dir, BasicFileAttributes attrs) throws IOException {
-        if(Files.isReadable(dir)){
-            getExecutorInstance().submit(new DuplicatesFinder(dir, filter));
+        if(!Files.isReadable(dir)){
+            System.out.println("Erreur d'accès au dossier: " + dir.toString());
         }
         return FileVisitResult.CONTINUE;
     }
@@ -56,19 +51,22 @@ public class DuplicatesFinder implements FileVisitor<Path>, Callable{
     @Override
     public FileVisitResult visitFile(Path path, BasicFileAttributes attrs) throws IOException {
         if(Files.isReadable(path)){
-            FileNode element = new FileNode(path.toString());
-            if(element.getValue().isFile()){
-                String hash = element.getHash();
-                Object file = (Object) this.duplicates.get(hash);
-                if (file == null){
-                    this.duplicates.put(hash, element);
-                }else if(file instanceof ArrayList){
-                   ((ArrayList) file).add(element);
+            if(filter.accept(path.toFile())){
+                FileNode element = new FileNode(path.toString());
+                if(!cache.contains(element.getAbsolutePath())){
+                    cache.add(element);
                 }else{
-                    ArrayList<Object> duplicated = new ArrayList<>();
-                    duplicated.add((Object) element);
-                    duplicated.add(file);
-                    this.duplicates.put(hash, duplicated);
+                    System.out.println("test");
+                    element = cache.getMoreRecent(element.getAbsolutePath());
+                }
+                String hash = element.getHash();
+                List<File> files = duplicates.get(hash);
+                if(files != null){
+                    files.add(element);
+                }else{
+                    ArrayList<File> list = new ArrayList<>();
+                    list.add(element);
+                    duplicates.put(hash, list);
                 }
             }
         }
@@ -82,31 +80,30 @@ public class DuplicatesFinder implements FileVisitor<Path>, Callable{
     }
     
     @Override
-    public DuplicatesFinder call() throws Exception {
+    public Map<String, List<File>> call() throws Exception {
         try{
             Files.walkFileTree(rootPath, this);
         }catch(IOException error){
             System.out.println("Error while parsing files");
             return null;
         }
-        return this;
-    }
-    
-    public static DuplicatesFinder searchDuplicates(String rootPath, Filter filter){
-        Path path = Paths.get(rootPath);
-        DuplicatesFinder finder = new DuplicatesFinder(path, filter);
-        getExecutorInstance().submit(finder);
-        return finder;
-    }
-    
-    public static ArrayList<FileNode> getDuplicates(String rootPath){
-        ArrayList<FileNode> duplicated = new ArrayList<>();
-        for (Object item : duplicates.values()) {
-            if(item instanceof ArrayList){
-                duplicated.addAll((ArrayList<FileNode>) item);
+        for (String hash : duplicates.keySet()) {
+            if(duplicates.get(hash).size() <= 1){
+                duplicates.remove(hash);
             }
         }
-        return duplicated;
+        return duplicates;
+    }
+    
+    public static Map<String, List<File>> searchDuplicates(String rootPath, Filter filter){
+        Path path = Paths.get(rootPath);
+        DuplicatesFinder finder = new DuplicatesFinder(path, filter);
+        Future<Map<String, List<File>>> duplicated = EXECUTOR.submit(finder);
+        try{
+            return duplicated.get();
+        }catch(Exception error){
+            return null;
+        }
     }
     
 }
