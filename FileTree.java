@@ -65,7 +65,7 @@ public class FileTree implements Analyzer{
     
     /**
      * Method getting a node from his path on the tree
-     * Exemple: if root path is: "/home/", path could be "/home/session/"
+     * Exemple: if root path is: "/home/", path could be "/session/.../". Path "/session/" is not valid, use getRoot()
      * @param path The string representation of the node path searched
      * @return The node in tree corresponding to the path.
      */
@@ -155,29 +155,54 @@ public class FileTree implements Analyzer{
         return tree; 
     }
 
+    /**
+     * Method returning duplicates files in a path
+     * @param filter Filter used to check files
+     * @param path String representation of the path on which you want to ckeck duplicates
+     * @return Return list of duplicates indexed by hash in a map.
+     */
     @Override
     public Map<String, List<File>> getDuplicates(String path, Filter filter) {
-        cache.unserialize();
+        this.unserializeCache();
         DuplicatesFinder finder = new DuplicatesFinder(Paths.get(path), filter);
         Future<Map<String, List<File>>> duplicated = Executors.newFixedThreadPool(1).submit(finder);
         try{
-            cache.serialize();
+            this.serializeCache();
             return duplicated.get();
         }catch(Exception error){
-            return null;
+            error.printStackTrace();
+            System.out.println("Error while getting duplicates");
         }
+        return null;
     }
 
+    /**
+     * Method allowing to check duplicates from a DefaultMutableTreeNode
+     * @param filter Filter used to check files
+     * @param path String representation of the path on which you want to ckeck duplicates
+     * @return Return list of duplicates indexed by hash in a map.
+     */
     @Override
     public Map<String, List<File>> getDuplicates(DefaultMutableTreeNode node, Filter filter) {
         return getDuplicates(getFileNode(node).getAbsolutePath(), filter);
     }
 
+    /**
+     * Method returning a TreeModel representation of the current FileTree
+     * @return A TreeModel
+     */
     @Override
     public TreeModel getTreeModel() {
         return new DefaultTreeModel(root);
     }
 
+    /**
+     * Builder of the File Tree
+     * @param rootPath String representation of the root path
+     * @param filter Filter used to check files
+     * @param hash Boolean, equals true for hashing files on tree building, false either
+     * @param recordInCache Boolean, equals true for saving tree files on cache.
+     */
     public void buildFileTree(String rootPath, Filter filter, Boolean hash, Boolean recordInCache){
         Path path = Paths.get(rootPath);
         this.unserializeCache();
@@ -194,13 +219,25 @@ public class FileTree implements Analyzer{
         if(filter.isActive()){
             this.cleanFolders();
         }
-        cache.serialize();
+        if(recordInCache){
+            this.serializeCache();
+        }
     }
     
+    /**
+     * Default tree builder
+     * @param rootPath String representation of the root path
+     * @param hash Boolean, equals true for hashing files on tree building, false either
+     * @param recordInCache Boolean, equals true for saving tree files on cache.
+     */
     public void buildFileTree(String rootPath, Boolean hash, Boolean recordInCache){
         buildFileTree(rootPath, new Filter(), hash, recordInCache);
     }
     
+    /**
+     * Method used to launch the semi real-time listening of the system (checking all N seconds)
+     * @param millisRefresh Refreshing delay in milli-seconds
+     */
     public void listenSystemChanges(int millisRefresh){
         SystemListener.SYSTEM_LISTENER.registerTree(this);
         SystemListener.SYSTEM_LISTENER.setDelay(millisRefresh);
@@ -209,11 +246,20 @@ public class FileTree implements Analyzer{
     }
     
 
+    /**
+     * Method removing a Node in file tree
+     * @param path Path of the node
+     */
     @Override
     public void deleteNode(String path) {
         deleteNode(getChildByPath(path));
     }
 
+    /**
+     * Method removing a Node in file tree
+     * @param node DefaultMutableTreeNode instance to delete
+     */
+    
     @Override
     public void deleteNode(DefaultMutableTreeNode node) {
         Enumeration<DefaultMutableTreeNode> en = node.preorderEnumeration();

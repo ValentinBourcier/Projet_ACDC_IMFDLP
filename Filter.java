@@ -33,7 +33,7 @@ public class Filter implements FileFilter{
     
     /**
      * Method checking the correspondance of a file with the filter
-     * @return True if the file is valid false ether.
+     * @return True if the file is valid false either.
      */
     @Override
     public boolean accept(File file) {
@@ -74,16 +74,16 @@ public class Filter implements FileFilter{
     }
     
     /**
-     * Permet d'ajouter une contrainte de correspondance avec le nom de fichier
-     * @param comparison Chaine qui doit etre contenu dans le nom de fichier
+     * Adding a file name constraint
+     * @param comparison String which should be contained in file name
      */
     public void nameContains(String comparison){
         this.name = comparison;
     }
     
     /**
-     * Permet d'ajouter une contrainte de correspondance avec le poids du fichier
-     * @param weight Poids qui doit etre égal à celui du fichier
+     * Adding a file weight equality constraint
+     * @param weight Weight that the file should have
      */
     public void weightEq(long weight){
         this.weight = weight;
@@ -91,9 +91,10 @@ public class Filter implements FileFilter{
         this.weightLw = false;
     }
     
+    
     /**
-     * Permet d'ajouter une contrainte de correspondance avec le poids du fichier
-     * @param weight Poids qui doit etre inférieur à celui le fichier
+     * Adding a file weight constraint (greater than)
+     * @param weight Weight that the file should be greater than
      */
     public void weightGt(long weight){
         this.weight = weight;
@@ -101,9 +102,10 @@ public class Filter implements FileFilter{
         this.weightLw = false;
     }
     
+    
     /**
-     * Permet d'ajouter une contrainte de correspondance avec le poids du fichier
-     * @param weight Poids qui doit etre supérieur à celui le fichier
+     * Adding a file weight constraint (lower than)
+     * @param weight Weight that the file should be lower than
      */
     public void weightLw(long weight){
         this.weight = weight;
@@ -111,17 +113,18 @@ public class Filter implements FileFilter{
         this.weightLw = true;
     }
     
+    
     /**
-     * Permet d'ajouter une contrainte de correspondance avec l'extension du fichier
-     * @param extension Nouvelle extension qui doit etre acceptée par le filtre
+     * Adding a valid extension
+     * @param extension Extension to accept
      */
     public void acceptExtension(String extension){
         this.extensions.add(extension);
     }
     
     /**
-     * Correspondance avec la date de modification du fichier
-     * @param date Dernière date de modification du fichier
+     * Adding a date equality constraint
+     * @param date Modification date of the file that should be verified
      */
     public void dateEq(Date date){
         this.date = date.getTime();
@@ -130,8 +133,8 @@ public class Filter implements FileFilter{
     }
     
     /**
-     * Correspondance avec la date de modification du fichier
-     * @param date Dernière date de modification du fichier
+     * Adding a date constraint (Older than)
+     * @param date Modification date of the file that should be verified
      */
     public void dateGt(Date date){
         this.date = date.getTime();
@@ -140,10 +143,9 @@ public class Filter implements FileFilter{
     }
     
     /**
-     * Correspondance avec la date de modification du fichier
-     * @param date Dernière date de modification du fichier
+     * Adding a date constraint (Less older than)
+     * @param date Modification date of the file that should be verified
      */
-    
     public void dateLw(Date date){
         this.date = date.getTime();
         this.dateGt = false;
@@ -151,16 +153,16 @@ public class Filter implements FileFilter{
     }
     
     /**
-     * Indique si le filtre doit valider ou non les dossiers
-     * @param accept True si il faut effectuer des vérifications sur les dossiers false sinon.
+     * Method to check directories
+     * @param accept Boolean equals to true if we should check directories validity, false either.
      */
     public void acceptDirectory(boolean accept){
         this.directory = accept;
     }
     
     /**
-     * Indique si le filtre est actif ou non
-     * @return True si le filtre est actif, false sinon
+     * Method saying if filter was activate
+     * @return True is filter was activated, false either
      */
     public boolean isActive() {
         return this.extensions.isEmpty() == false || this.name != null || this.directory == false || this.date != 0 || this.weight != 0;

@@ -5,19 +5,24 @@ import javax.swing.tree.DefaultMutableTreeNode;
 import javax.swing.tree.TreeModel;
 
 /**
- *
- * @author valentin
+ * Analyser services 
+ * 
+ * @author Valentin Bourcier
  */
 public interface Analyzer {
     
     void buildFileTree(String rootPath, Filter filter, Boolean hash, Boolean recordInCache);
+    
     void buildFileTree(String rootPath, Boolean hash, Boolean recordInCache);
     
     void deleteNode(String path);
+    
     void deleteNode(DefaultMutableTreeNode node);
     
     Map<String, List<File>> getDuplicates(String path, Filter filter);
+    
     Map<String, List<File>> getDuplicates(DefaultMutableTreeNode node, Filter filter);
+    
     TreeModel getTreeModel();
     
     default void cleanCache(){
@@ -33,6 +38,7 @@ public interface Analyzer {
     }
     
     void listenSystemChanges(int millisRefresh);
+    
     default void addFileTreeListener(FileTreeListener listener){
         SystemListener.SYSTEM_LISTENER.addFileTreeListener(listener);
     }

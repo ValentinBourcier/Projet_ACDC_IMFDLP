@@ -7,20 +7,29 @@ import java.security.DigestInputStream;
 import java.security.MessageDigest;
 import java.security.NoSuchAlgorithmException;
 /**
- * Classe qui représente un noeud de l'arbre
+ * Class defining the FileNode object in FileTree
  * 
- * @author valentin
+ * @author Valentin Bourcier
  */
 public class FileNode extends File implements Serializable{
     
     private String hash;
-    public static final long INSTANCE_TIME = System.currentTimeMillis();
+    // Date of creation of the current FileNode
+    public final long INSTANCE_TIME = System.currentTimeMillis();
     
+    /**
+     * FileNode builder
+     */
     public FileNode(String path){
         super(path);
         this.hash = null;
     }
     
+    /**
+     * Method calculating hash of a file
+     * @param algorithme Digest algorithme used: "MD5", "SHA1"...
+     * @return The hash string of current file
+     */
     public String hash(String algorithme){
         if(this.isFile() && this.canRead()){
             DigestInputStream digest = null;
@@ -60,6 +69,10 @@ public class FileNode extends File implements Serializable{
         return null;
     }
     
+    /**
+     * Method launching hash if not already calculated
+     * @return The hash string of current file 
+     */
     public String getHash(){
         if(this.hash == null){
             hash("MD5");
@@ -67,6 +80,9 @@ public class FileNode extends File implements Serializable{
         return this.hash;
     }
     
+    /**
+     * String representation of the file
+     */
     public String toString(){
         return this.getName();
     }

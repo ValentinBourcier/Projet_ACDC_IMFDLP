@@ -1,7 +1,9 @@
+
 /**
- *
- * @author valentin
+ * Interface to implement for listening changes in the FileTree
+ * 
+ * @author Valentin Bourcier
  */
 public interface FileTreeListener {
-    void fileTreeChanged();
+    void fileTreeUpdated(FileTree tree);
 }

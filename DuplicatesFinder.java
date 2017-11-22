@@ -4,21 +4,19 @@ import java.nio.file.FileVisitResult;
 import java.nio.file.FileVisitor;
 import java.nio.file.Files;
 import java.nio.file.Path;
-import java.nio.file.Paths;
 import java.nio.file.attribute.BasicFileAttributes;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.concurrent.Callable;
-import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.Executors;
-import java.util.concurrent.Future;
 import java.util.concurrent.ThreadPoolExecutor;
 
 /**
- *
- * @author valentin
+ * Class collecting duplicates files
+ * 
+ * @author Valentin Bourcier
  */
 public class DuplicatesFinder implements FileVisitor<Path>, Callable{
     
@@ -29,12 +27,20 @@ public class DuplicatesFinder implements FileVisitor<Path>, Callable{
     private static ThreadPoolExecutor EXECUTOR = (ThreadPoolExecutor) Executors.newFixedThreadPool(1);
     
 
+    /**
+     * Builder of the finder
+     * @param rootPath Path of the root file
+     * @param filter Filter instance checking duplicates files validity
+     */
     public DuplicatesFinder(Path rootPath, Filter filter) {
         this.filter = filter;
         this.rootPath = rootPath;
         this.duplicates = new HashMap<String, List<File>>();
     }
     
+    /**
+     * Inherited from FileVisitor
+     */
     @Override
     public FileVisitResult preVisitDirectory(Path dir, BasicFileAttributes attrs) throws IOException {
         if(!Files.isReadable(dir)){
@@ -43,11 +49,17 @@ public class DuplicatesFinder implements FileVisitor<Path>, Callable{
         return FileVisitResult.CONTINUE;
     }
  
+    /**
+     * Inherited from FileVisitor
+     */
     @Override
     public FileVisitResult postVisitDirectory(Path dir, IOException exc) throws IOException {
         return FileVisitResult.CONTINUE;
     }
  
+    /**
+     * Inherited from FileVisitor
+     */
     @Override
     public FileVisitResult visitFile(Path path, BasicFileAttributes attrs) throws IOException {
         if(Files.isReadable(path)){
@@ -55,30 +67,40 @@ public class DuplicatesFinder implements FileVisitor<Path>, Callable{
                 FileNode element = new FileNode(path.toString());
                 if(!cache.contains(element.getAbsolutePath())){
                     cache.add(element);
+                    System.out.println("Non");
                 }else{
                     System.out.println("test");
                     element = cache.getMoreRecent(element.getAbsolutePath());
                 }
                 String hash = element.getHash();
-                List<File> files = duplicates.get(hash);
-                if(files != null){
-                    files.add(element);
-                }else{
-                    ArrayList<File> list = new ArrayList<>();
-                    list.add(element);
-                    duplicates.put(hash, list);
+                if(hash != null){
+                        List<File> files = duplicates.get(hash);
+                    if(files != null){
+                        files.add(element);
+                    }else{
+                        ArrayList<File> list = new ArrayList<>();
+                        list.add(element);
+                        duplicates.put(hash, list);
+                    }
                 }
+                
             }
         }
         return FileVisitResult.CONTINUE;
     }
  
+    /**
+     * Inherited from FileVisitor
+     */
     @Override
     public FileVisitResult visitFileFailed(Path file, IOException exc) throws IOException {
         System.out.println("File reading failed for: " + exc.getMessage());
         return FileVisitResult.CONTINUE;
     }
     
+    /**
+     * Method launching the research
+     */
     @Override
     public Map<String, List<File>> call() throws Exception {
         try{
@@ -93,17 +115,6 @@ public class DuplicatesFinder implements FileVisitor<Path>, Callable{
             }
         }
         return duplicates;
-    }
-    
-    public static Map<String, List<File>> searchDuplicates(String rootPath, Filter filter){
-        Path path = Paths.get(rootPath);
-        DuplicatesFinder finder = new DuplicatesFinder(path, filter);
-        Future<Map<String, List<File>>> duplicated = EXECUTOR.submit(finder);
-        try{
-            return duplicated.get();
-        }catch(Exception error){
-            return null;
-        }
     }
     
 }

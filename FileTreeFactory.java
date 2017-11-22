@@ -9,8 +9,9 @@ import java.util.concurrent.Callable;
 import javax.swing.tree.DefaultMutableTreeNode;
 
 /**
- *
- * @author valentin
+ * Class building a file tree
+ * 
+ * @author Valentin Bourcier
  */
 public class FileTreeFactory implements FileVisitor<Path>, Callable{
     
@@ -22,6 +23,11 @@ public class FileTreeFactory implements FileVisitor<Path>, Callable{
     private Boolean hash;
     public Boolean recordInCache = true;
     
+    /**
+     * Factory initializer
+     * @param rootPath Path of the root file
+     * @param 
+     */
     public FileTreeFactory(Path rootPath, DefaultMutableTreeNode root, Filter filter, Boolean hash, Boolean recordInCache) {
         this.filter = filter;
         this.root = root;
@@ -32,6 +38,9 @@ public class FileTreeFactory implements FileVisitor<Path>, Callable{
         this.recordInCache = recordInCache;
     }
     
+    /**
+     * Inherited from FileVisitor
+     */
     @Override
     public FileVisitResult preVisitDirectory(Path dir, BasicFileAttributes attrs) throws IOException {
         if(Files.isReadable(dir)){
@@ -47,12 +56,18 @@ public class FileTreeFactory implements FileVisitor<Path>, Callable{
         return FileVisitResult.CONTINUE;
     }
  
+    /**
+     * Inherited from FileVisitor
+     */
     @Override
     public FileVisitResult postVisitDirectory(Path dir, IOException exc) throws IOException {
         currentNode = (DefaultMutableTreeNode) currentNode.getParent();
         return FileVisitResult.CONTINUE;
     }
  
+    /**
+     * Inherited from FileVisitor
+     */
     @Override
     public FileVisitResult visitFile(Path path, BasicFileAttributes attrs) throws IOException {
         if(Files.isReadable(path)){
@@ -80,12 +95,18 @@ public class FileTreeFactory implements FileVisitor<Path>, Callable{
         return FileVisitResult.CONTINUE;
     }
  
+    /**
+     * Inherited from FileVisitor
+     */
     @Override
     public FileVisitResult visitFileFailed(Path file, IOException exc) throws IOException {
         System.out.println("File reading failed for: " + exc.getMessage());
         return FileVisitResult.CONTINUE;
     }
     
+    /**
+     * Method launching the research
+     */
     @Override
     public DefaultMutableTreeNode call() throws Exception {
         try{
