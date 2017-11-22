@@ -1,10 +1,12 @@
 import java.io.File;
 import java.io.IOException;
+import java.nio.file.FileVisitOption;
 import java.nio.file.FileVisitResult;
 import java.nio.file.FileVisitor;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.attribute.BasicFileAttributes;
+import java.util.EnumSet;
 import java.util.concurrent.Callable;
 import javax.swing.tree.DefaultMutableTreeNode;
 
@@ -21,14 +23,15 @@ public class FileTreeFactory implements FileVisitor<Path>, Callable{
     private final Path rootPath;
     private CacheManager cache;
     private Boolean hash;
-    public Boolean recordInCache = true;
+    private Boolean recordInCache = true;
+    private int maxDepth;
     
     /**
      * Factory initializer
      * @param rootPath Path of the root file
      * @param 
      */
-    public FileTreeFactory(Path rootPath, DefaultMutableTreeNode root, Filter filter, Boolean hash, Boolean recordInCache) {
+    public FileTreeFactory(Path rootPath, DefaultMutableTreeNode root, Filter filter, Boolean hash, Boolean recordInCache, int maxDepth) {
         this.filter = filter;
         this.root = root;
         this.currentNode = this.root;
@@ -36,6 +39,7 @@ public class FileTreeFactory implements FileVisitor<Path>, Callable{
         this.cache = CacheManager.getInstance();
         this.hash = hash;
         this.recordInCache = recordInCache;
+        this.maxDepth = maxDepth;
     }
     
     /**
@@ -44,10 +48,8 @@ public class FileTreeFactory implements FileVisitor<Path>, Callable{
     @Override
     public FileVisitResult preVisitDirectory(Path dir, BasicFileAttributes attrs) throws IOException {
         if(Files.isReadable(dir)){
-            if (root == null) {
-                root = new DefaultMutableTreeNode(new FileNode(dir.toString()));
-                currentNode = root;
-            } else {
+            Path file = ((FileNode) this.root.getUserObject()).toPath();
+            if(!file.equals(dir)){
                 DefaultMutableTreeNode directory = new DefaultMutableTreeNode(new FileNode(dir.toString()));
                 currentNode.add(directory);
                 currentNode = directory;
@@ -110,7 +112,12 @@ public class FileTreeFactory implements FileVisitor<Path>, Callable{
     @Override
     public DefaultMutableTreeNode call() throws Exception {
         try{
-            Files.walkFileTree(rootPath, this);
+            if(maxDepth > 0){
+                Files.walkFileTree(rootPath, EnumSet.noneOf(FileVisitOption.class), this.maxDepth, this);
+            }else{
+                Files.walkFileTree(rootPath, this);
+            }
+            
         }catch(IOException error){
             error.printStackTrace();
             System.out.println("Error while creating FileTree");

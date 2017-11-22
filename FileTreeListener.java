@@ -1,4 +1,3 @@
-
 /**
  * Interface to implement for listening changes in the FileTree
  * 

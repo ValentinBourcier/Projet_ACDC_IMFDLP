@@ -16,7 +16,7 @@ import java.util.HashMap;
 public class CacheManager {
     
     private HashMap<String, FileNode> cache = new HashMap<>();
-    private String location;
+    public static String LOCATION = "tree.cache";
     private Boolean modified;
     private static CacheManager manager;
 
@@ -25,9 +25,9 @@ public class CacheManager {
      */
     private CacheManager(){
         cache = new HashMap<>();
-        location = "tree.cache";
         modified = false;
     }
+    
     
     /**
      * Thread safe singleton implementation
@@ -74,7 +74,7 @@ public class CacheManager {
      * @return True if the cache is saved in system
      */
     public boolean isSet(){
-        return Files.exists(Paths.get(this.location));
+        return Files.exists(Paths.get(this.LOCATION));
     }
     
     public boolean contains(String path){
@@ -104,7 +104,7 @@ public class CacheManager {
     public void serialize(){
         if(modified){
             try{
-                FileOutputStream file = new FileOutputStream(this.location, false);
+                FileOutputStream file = new FileOutputStream(this.LOCATION, false);
                 ObjectOutputStream stream = new ObjectOutputStream(file);
                 stream.writeObject(cache);
                 stream.close();
@@ -122,7 +122,7 @@ public class CacheManager {
         if(isSet()){
             try
             {
-                FileInputStream file = new FileInputStream(this.location);
+                FileInputStream file = new FileInputStream(this.LOCATION);
                 ObjectInputStream stream = new ObjectInputStream(file);
                 this.cache = (HashMap) stream.readObject();
                 stream.close();
@@ -137,7 +137,7 @@ public class CacheManager {
     
     public void clean(){
         if(isSet()){
-            new File(this.location).delete();
+            new File(this.LOCATION).delete();
         }
     }
     

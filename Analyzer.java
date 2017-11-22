@@ -11,16 +11,11 @@ import javax.swing.tree.TreeModel;
  */
 public interface Analyzer {
     
-    void buildFileTree(String rootPath, Filter filter, Boolean hash, Boolean recordInCache);
-    
-    void buildFileTree(String rootPath, Boolean hash, Boolean recordInCache);
-    
-    void deleteNode(String path);
-    
-    void deleteNode(DefaultMutableTreeNode node);
+    // Analyzer services
+    void buildFileTree(String rootPath, Filter filter, Boolean hash, Boolean recordInCache, int maxDepth);
+    void buildFileTree(String rootPath, Boolean hash, Boolean recordInCache, int maxDepth);
     
     Map<String, List<File>> getDuplicates(String path, Filter filter);
-    
     Map<String, List<File>> getDuplicates(DefaultMutableTreeNode node, Filter filter);
     
     TreeModel getTreeModel();
@@ -42,4 +37,24 @@ public interface Analyzer {
     default void addFileTreeListener(FileTreeListener listener){
         SystemListener.SYSTEM_LISTENER.addFileTreeListener(listener);
     }
+    
+    
+    // File Tree services
+    long getWeight(String path);
+    long getWeight(DefaultMutableTreeNode node);
+    
+    FileNode getFileNode(String path);
+    FileNode getFileNode(DefaultMutableTreeNode node);
+    
+    void deleteNode(String path);
+    void deleteNode(DefaultMutableTreeNode node);
+    
+    int getDepth();
+    
+    void cleanEmptyFolders();
+    
+    DefaultMutableTreeNode getChildByPath(String path);
+    
+    DefaultMutableTreeNode getRoot();
+    
 }

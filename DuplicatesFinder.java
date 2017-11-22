@@ -67,9 +67,7 @@ public class DuplicatesFinder implements FileVisitor<Path>, Callable{
                 FileNode element = new FileNode(path.toString());
                 if(!cache.contains(element.getAbsolutePath())){
                     cache.add(element);
-                    System.out.println("Non");
                 }else{
-                    System.out.println("test");
                     element = cache.getMoreRecent(element.getAbsolutePath());
                 }
                 String hash = element.getHash();

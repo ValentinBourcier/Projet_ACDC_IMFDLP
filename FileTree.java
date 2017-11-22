@@ -1,4 +1,6 @@
 import java.io.File;
+import java.io.IOException;
+import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.util.Enumeration;
@@ -81,16 +83,29 @@ public class FileTree implements Analyzer{
         int cpt = nodePath[0].equals("") ? 1 : 0;
         while (en.hasMoreElements() && cpt < nodePath.length) {
             DefaultMutableTreeNode tmp = en.nextElement();
+            TreeNode[] tmpParent = null;
+            String parentPath = "";
+            if(!tmp.isRoot()){
+                tmpParent = ((DefaultMutableTreeNode) tmp.getParent()).getPath();
+                parentPath = tmpParent[tmpParent.length-1].toString();
+            }
+            TreeNode[] tmpPath = tmp.getPath();
+            String name = tmpPath[tmpPath.length - 1].toString();
+                
             if(!tmp.isLeaf()){
-                TreeNode[] tmpPath = tmp.getPath();
-                String name = tmpPath[tmpPath.length - 1].toString();
                 if (name.equals(nodePath[cpt])) {
                     node = tmp;
                     cpt++;
                 }
+            }else if(cpt == nodePath.length-1 && name.equals(nodePath[cpt])){
+                if(!tmp.isRoot() && parentPath.equals(nodePath[cpt-1])){
+                    node = tmp;
+                    cpt++;
+                }
+                
             }
         }
-        if(rootName.equals(pathRoot) && node.equals(this.root)){
+        if(rootName.equals(pathRoot) && node.equals(this.root) || cpt < nodePath.length-1){
             throw new IllegalArgumentException("Path cannot be verified by the tree.");
         }
         return node;
@@ -124,16 +139,19 @@ public class FileTree implements Analyzer{
     
     
     /**
-     * Method deleting empty folders
+     * Method deleting empty folders in file tree
      */
-    public void cleanFolders() {
+    public void cleanEmptyFolders() {
         Enumeration<DefaultMutableTreeNode> en = this.root.breadthFirstEnumeration();
         while (en.hasMoreElements()) {
             DefaultMutableTreeNode node = en.nextElement();
-            if (node.getUserObject() instanceof File && ((File) node.getUserObject()).length() == 0 && node.isLeaf()) {
-                node.removeAllChildren();
-                node.removeFromParent();
-                en = this.root.breadthFirstEnumeration();
+            if (node.getUserObject() instanceof File) {
+                File file = (File) node.getUserObject();
+                if(file.isDirectory() && file.listFiles().length == 0){               
+                    node.removeFromParent();
+                    en = this.root.breadthFirstEnumeration();
+                }
+                
             }
 
         }
@@ -203,11 +221,11 @@ public class FileTree implements Analyzer{
      * @param hash Boolean, equals true for hashing files on tree building, false either
      * @param recordInCache Boolean, equals true for saving tree files on cache.
      */
-    public void buildFileTree(String rootPath, Filter filter, Boolean hash, Boolean recordInCache){
+    public void buildFileTree(String rootPath, Filter filter, Boolean hash, Boolean recordInCache, int maxDepth){
         Path path = Paths.get(rootPath);
         this.unserializeCache();
         this.root = new DefaultMutableTreeNode(new FileNode(rootPath));
-        FileTreeFactory factory = new FileTreeFactory(path, this.root, filter, hash, recordInCache);
+        FileTreeFactory factory = new FileTreeFactory(path, this.root, filter, hash, recordInCache, maxDepth);
         Future<DefaultMutableTreeNode> result = Executors.newSingleThreadExecutor().submit(factory);
         try{
             this.root = result.get();
@@ -217,7 +235,7 @@ public class FileTree implements Analyzer{
             System.out.println("FileTree building failed");
         }
         if(filter.isActive()){
-            this.cleanFolders();
+            this.cleanEmptyFolders();
         }
         if(recordInCache){
             this.serializeCache();
@@ -230,8 +248,8 @@ public class FileTree implements Analyzer{
      * @param hash Boolean, equals true for hashing files on tree building, false either
      * @param recordInCache Boolean, equals true for saving tree files on cache.
      */
-    public void buildFileTree(String rootPath, Boolean hash, Boolean recordInCache){
-        buildFileTree(rootPath, new Filter(), hash, recordInCache);
+    public void buildFileTree(String rootPath, Boolean hash, Boolean recordInCache, int maxDepth){
+        buildFileTree(rootPath, new Filter(), hash, recordInCache, maxDepth);
     }
     
     /**
@@ -271,5 +289,37 @@ public class FileTree implements Analyzer{
         }
         node.removeAllChildren();
         node.removeFromParent();
+        File file = getFileNode(node);
+        if(file.exists()){
+            try{
+                delete(file);
+            }catch(IOException error){
+                error.printStackTrace();
+            }
+            
+        }
     }
+    
+    /**
+     * Method used to delete a file from the system
+     * @param file The File to delete
+     */
+    private static void delete(File file) throws IOException {
+        if(file.isDirectory()){
+            for (File childFile : file.listFiles()) {
+                if (childFile.isDirectory()) {
+                    delete(childFile);
+                } else {
+                    if (!childFile.delete()) {
+                        throw new IOException();
+                    }
+                }
+            }
+        }
+        
+        if (!file.delete()) {
+            throw new IOException();
+        }
+    }
+
 }
