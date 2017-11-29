@@ -7,6 +7,12 @@ import java.util.List;
 import java.util.Map;
 import javax.swing.tree.DefaultMutableTreeNode;
 
+import Analyzer.Control.CacheManager;
+import Analyzer.Model.FileNode;
+import Analyzer.Model.FileTree;
+import Analyzer.Service.Analyzer;
+import Analyzer.Service.Filter;
+
 /**
  * Lancement de tests
  * 
