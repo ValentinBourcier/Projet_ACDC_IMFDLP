@@ -16,9 +16,9 @@ import javax.swing.tree.TreeModel;
 import javax.swing.tree.TreeNode;
 
 import Analyzer.Control.CacheManager;
-import Analyzer.Control.DuplicatesFinder;
 import Analyzer.Control.SystemListener;
 import Analyzer.Service.Analyzer;
+import Analyzer.Service.DuplicatesFinder;
 import Analyzer.Service.Filter;
 
 /**

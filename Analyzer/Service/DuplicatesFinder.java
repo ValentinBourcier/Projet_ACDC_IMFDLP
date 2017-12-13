@@ -1,4 +1,4 @@
-package Analyzer.Control;
+package Analyzer.Service;
 
 import java.io.File;
 import java.io.IOException;
@@ -15,8 +15,8 @@ import java.util.concurrent.Callable;
 import java.util.concurrent.Executors;
 import java.util.concurrent.ThreadPoolExecutor;
 
+import Analyzer.Control.CacheManager;
 import Analyzer.Model.FileNode;
-import Analyzer.Service.Filter;
 
 /**
  * Class collecting duplicates files
