@@ -8,5 +8,5 @@ import Analyzer.Model.FileTree;
  * @author Valentin Bourcier
  */
 public interface FileTreeListener {
-    void fileTreeUpdated(FileTree tree);
+    void fileTreeUpdated(FileTree tree, int nbChanges);
 }

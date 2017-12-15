@@ -1,9 +1,12 @@
 package Analyzer.Control;
 
 import java.io.File;
+
 import java.util.ArrayList;
 import java.util.Enumeration;
 import java.util.List;
+import java.util.concurrent.Future;
+
 import javax.swing.tree.DefaultMutableTreeNode;
 
 import Analyzer.Model.FileNode;
@@ -51,9 +54,9 @@ public class SystemListener implements Runnable{
     /**
      * Method throwing the update Event
      */
-    public synchronized void throwUpdateEvent(){
+    public synchronized void throwUpdateEvent(int nbChanges){
         for (FileTreeListener fileTreeListener: fileTreeListeners) {
-            fileTreeListener.fileTreeUpdated(this.tree);
+            fileTreeListener.fileTreeUpdated(this.tree, nbChanges);
         }
     }
     
@@ -70,20 +73,42 @@ public class SystemListener implements Runnable{
                 System.out.println("System listening interrupted.");
             }
             boolean changed = false;
-            Enumeration<DefaultMutableTreeNode> en = this.tree.getRoot().preorderEnumeration();
+            int nbChanges = 0;
+            @SuppressWarnings("unchecked")
+			Enumeration<DefaultMutableTreeNode> en = this.tree.getRoot().preorderEnumeration();
             while (en.hasMoreElements()) {
                 DefaultMutableTreeNode node = en.nextElement();
                 FileNode file = this.tree.getFileNode(node);
                 String path = file.getAbsolutePath();
                 File sysFile = new File(path);
-                if(cache.contains(path) && cache.get(path).INSTANCE_TIME > sysFile.lastModified()){
+                if(!sysFile.exists()) {
+                	cache.remove(path);
+                	node.removeAllChildren();
+                	node.removeFromParent();
+                	node = null;
+                	changed = true;
+                	nbChanges++;
+                }
+                if(cache.contains(path) && cache.get(path).INSTANCE_TIME < sysFile.lastModified()){
                     node.setUserObject(this.cache.getMoreRecent(path));
+                    this.cache.add(this.cache.getMoreRecent(path));
                     changed = true;
+                    nbChanges++;
+                }
+                
+               	if(sysFile.isDirectory() && sysFile.listFiles().length > node.getChildCount()) {
+               		this.cache.clean();
+               		String directory = this.tree.getFileNode(this.tree.getRoot()).getAbsolutePath();
+               		this.tree = new FileTree();
+               		Future<DefaultMutableTreeNode> result = this.tree.buildFileTree(directory, false, true, 0);
+               		while(!result.isDone()) {}
+                    changed = true;
+                    nbChanges++;
                 }
             }
             
             if(changed){
-                throwUpdateEvent();
+                throwUpdateEvent(nbChanges);
             }
         }
     }   

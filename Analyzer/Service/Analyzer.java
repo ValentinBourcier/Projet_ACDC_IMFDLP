@@ -3,6 +3,8 @@ package Analyzer.Service;
 import java.io.File;
 import java.util.List;
 import java.util.Map;
+import java.util.concurrent.Future;
+
 import javax.swing.tree.DefaultMutableTreeNode;
 import javax.swing.tree.TreeModel;
 
@@ -25,16 +27,18 @@ public interface Analyzer {
      * @param filter Filter used to check files
      * @param hash Boolean, equals true for hashing files on tree building, false either
      * @param recordInCache Boolean, equals true for saving tree files on cache.
+     * @return The DefaultMutableTreeNode root of the Tree in a thread result object.
      */
-    void buildFileTree(String rootPath, Filter filter, Boolean hash, Boolean recordInCache, int maxDepth);
+	Future<DefaultMutableTreeNode> buildFileTree(String rootPath, Filter filter, Boolean hash, Boolean recordInCache, int maxDepth);
     
     /**
      * Default tree builder
      * @param rootPath String representation of the root path
      * @param hash Boolean, equals true for hashing files on tree building, false either
      * @param recordInCache Boolean, equals true for saving tree files on cache.
+     * @return The DefaultMutableTreeNode root of the Tree in a thread result object.
      */
-    void buildFileTree(String rootPath, Boolean hash, Boolean recordInCache, int maxDepth);
+	Future<DefaultMutableTreeNode> buildFileTree(String rootPath, Boolean hash, Boolean recordInCache, int maxDepth);
     
     /**
      * Method returning duplicates files in a path

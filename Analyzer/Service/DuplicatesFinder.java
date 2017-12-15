@@ -12,8 +12,6 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.concurrent.Callable;
-import java.util.concurrent.Executors;
-import java.util.concurrent.ThreadPoolExecutor;
 
 import Analyzer.Control.CacheManager;
 import Analyzer.Model.FileNode;
@@ -23,15 +21,14 @@ import Analyzer.Model.FileNode;
  * 
  * @author Valentin Bourcier
  */
+@SuppressWarnings("rawtypes")
 public class DuplicatesFinder implements FileVisitor<Path>, Callable{
     
     private Map<String, List<File>> duplicates;
     private Filter filter;
     private final Path rootPath;
     private CacheManager cache = CacheManager.getInstance();
-    private static ThreadPoolExecutor EXECUTOR = (ThreadPoolExecutor) Executors.newFixedThreadPool(1);
     
-
     /**
      * Builder of the finder
      * @param rootPath Path of the root file

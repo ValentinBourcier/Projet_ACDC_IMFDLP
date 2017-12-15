@@ -78,7 +78,7 @@ public class CacheManager {
      * @return True if the cache is saved in system
      */
     public boolean isSet(){
-        return Files.exists(Paths.get(this.LOCATION));
+        return Files.exists(Paths.get(LOCATION));
     }
     
     public boolean contains(String path){
@@ -108,7 +108,7 @@ public class CacheManager {
     public void serialize(){
         if(modified){
             try{
-                FileOutputStream file = new FileOutputStream(this.LOCATION, false);
+                FileOutputStream file = new FileOutputStream(LOCATION, false);
                 ObjectOutputStream stream = new ObjectOutputStream(file);
                 stream.writeObject(cache);
                 stream.close();
@@ -122,11 +122,12 @@ public class CacheManager {
     /**
      * Method unserializing the cache
      */
-    public void unserialize(){
+    @SuppressWarnings({ "unchecked", "rawtypes" })
+	public void unserialize(){
         if(isSet()){
             try
             {
-                FileInputStream file = new FileInputStream(this.LOCATION);
+                FileInputStream file = new FileInputStream(LOCATION);
                 ObjectInputStream stream = new ObjectInputStream(file);
                 this.cache = (HashMap) stream.readObject();
                 stream.close();
@@ -144,7 +145,7 @@ public class CacheManager {
      */
     public void clean(){
         if(isSet()){
-            new File(this.LOCATION).delete();
+            new File(LOCATION).delete();
         }
     }
     

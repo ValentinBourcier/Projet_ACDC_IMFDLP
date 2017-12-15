@@ -20,9 +20,10 @@ import Analyzer.Service.Filter;
  * 
  * @author Valentin Bourcier
  */
+@SuppressWarnings("rawtypes")
 public class FileTreeFactory implements FileVisitor<Path>, Callable{
     
-    public static DefaultMutableTreeNode root;
+    public DefaultMutableTreeNode root;
     private DefaultMutableTreeNode currentNode;
     private Filter filter;
     private final Path rootPath;
@@ -34,7 +35,11 @@ public class FileTreeFactory implements FileVisitor<Path>, Callable{
     /**
      * Factory initializer
      * @param rootPath Path of the root file
-     * @param 
+     * @param root The root object of the future FileTree
+     * @param filter The Filter used to restrict files in the Tree
+     * @param hash Boolean equals to True if the factory should hash files
+     * @param recordInCache Boolean equals to True if the factory should use the cache
+     * @param maxDepth Integer equivalent to the max depth of the tree that you want to build
      */
     public FileTreeFactory(Path rootPath, DefaultMutableTreeNode root, Filter filter, Boolean hash, Boolean recordInCache, int maxDepth) {
         this.filter = filter;

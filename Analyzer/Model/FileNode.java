@@ -15,7 +15,8 @@ import java.security.NoSuchAlgorithmException;
  */
 public class FileNode extends File implements Serializable{
     
-    private String hash;
+	private static final long serialVersionUID = 1L;
+	private String hash;
     // Date of creation of the current FileNode
     public final long INSTANCE_TIME = System.currentTimeMillis();
     

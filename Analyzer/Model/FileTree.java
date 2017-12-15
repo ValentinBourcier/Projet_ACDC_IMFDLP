@@ -2,7 +2,6 @@ package Analyzer.Model;
 
 import java.io.File;
 import java.io.IOException;
-import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.util.Enumeration;
@@ -81,8 +80,9 @@ public class FileTree implements Analyzer{
      */
     public DefaultMutableTreeNode getChildByPath(String path){
         DefaultMutableTreeNode node = this.root;
-        Enumeration<DefaultMutableTreeNode> en = node.preorderEnumeration();
-        String[] nodePath = path.split(File.separator);
+        @SuppressWarnings("unchecked")
+		Enumeration<DefaultMutableTreeNode> en = node.preorderEnumeration();
+        String[] nodePath = path.split("\\"+File.separator);
         String rootName = ((FileNode) this.root.getUserObject()).getName();
         String pathRoot = nodePath[0].equals("") ? nodePath[1] : nodePath[0];
         if(!rootName.equals(pathRoot)){
@@ -134,7 +134,8 @@ public class FileTree implements Analyzer{
      */
     public long getWeight(DefaultMutableTreeNode node){
         long size = 0;
-        Enumeration<DefaultMutableTreeNode> en = node.preorderEnumeration();
+        @SuppressWarnings("unchecked")
+		Enumeration<DefaultMutableTreeNode> en = node.preorderEnumeration();
         while (en.hasMoreElements()) {
             DefaultMutableTreeNode next = en.nextElement();
             FileNode file = ((FileNode) next.getUserObject());
@@ -149,8 +150,9 @@ public class FileTree implements Analyzer{
     /**
      * Method deleting empty folders in file tree
      */
-    public void cleanEmptyFolders() {
-        Enumeration<DefaultMutableTreeNode> en = this.root.breadthFirstEnumeration();
+    @SuppressWarnings("unchecked")
+	public void cleanEmptyFolders() {
+		Enumeration<DefaultMutableTreeNode> en = this.root.breadthFirstEnumeration();
         while (en.hasMoreElements()) {
             DefaultMutableTreeNode node = en.nextElement();
             if (node.getUserObject() instanceof File) {
@@ -168,7 +170,8 @@ public class FileTree implements Analyzer{
     /**
      * String representation of the file tree
      */
-    @Override
+    @SuppressWarnings("unchecked")
+	@Override
     public String toString() {
         Enumeration<DefaultMutableTreeNode> en = this.root.preorderEnumeration();
         String tree = "";
@@ -191,7 +194,8 @@ public class FileTree implements Analyzer{
     public Map<String, List<File>> getDuplicates(String path, Filter filter) {
         this.unserializeCache();
         DuplicatesFinder finder = new DuplicatesFinder(Paths.get(path), filter);
-        Future<Map<String, List<File>>> duplicated = Executors.newFixedThreadPool(1).submit(finder);
+        @SuppressWarnings("unchecked")
+		Future<Map<String, List<File>>> duplicated = Executors.newFixedThreadPool(1).submit(finder);
         try{
             this.serializeCache();
             return duplicated.get();
@@ -228,8 +232,10 @@ public class FileTree implements Analyzer{
      * @param filter Filter used to check files
      * @param hash Boolean, equals true for hashing files on tree building, false either
      * @param recordInCache Boolean, equals true for saving tree files on cache.
+     * @return The DefaultMutableTreeNode root of the Tree in a thread result object.
      */
-    public void buildFileTree(String rootPath, Filter filter, Boolean hash, Boolean recordInCache, int maxDepth){
+    @SuppressWarnings("unchecked")
+	public Future<DefaultMutableTreeNode> buildFileTree(String rootPath, Filter filter, Boolean hash, Boolean recordInCache, int maxDepth){
         Path path = Paths.get(rootPath);
         this.unserializeCache();
         this.root = new DefaultMutableTreeNode(new FileNode(rootPath));
@@ -248,6 +254,8 @@ public class FileTree implements Analyzer{
         if(recordInCache){
             this.serializeCache();
         }
+        
+        return result;
     }
     
     /**
@@ -255,9 +263,10 @@ public class FileTree implements Analyzer{
      * @param rootPath String representation of the root path
      * @param hash Boolean, equals true for hashing files on tree building, false either
      * @param recordInCache Boolean, equals true for saving tree files on cache.
+     * @return The DefaultMutableTreeNode root of the Tree in a thread result object.
      */
-    public void buildFileTree(String rootPath, Boolean hash, Boolean recordInCache, int maxDepth){
-        buildFileTree(rootPath, new Filter(), hash, recordInCache, maxDepth);
+    public Future<DefaultMutableTreeNode> buildFileTree(String rootPath, Boolean hash, Boolean recordInCache, int maxDepth){
+        return buildFileTree(rootPath, new Filter(), hash, recordInCache, maxDepth);
     }
     
     /**
@@ -287,7 +296,8 @@ public class FileTree implements Analyzer{
      */    
     @Override
     public void deleteNode(DefaultMutableTreeNode node) {
-        Enumeration<DefaultMutableTreeNode> en = node.preorderEnumeration();
+        @SuppressWarnings("unchecked")
+		Enumeration<DefaultMutableTreeNode> en = node.preorderEnumeration();
         while (en.hasMoreElements()) {
             DefaultMutableTreeNode nextNode = en.nextElement();
             if(nextNode.isLeaf()){
