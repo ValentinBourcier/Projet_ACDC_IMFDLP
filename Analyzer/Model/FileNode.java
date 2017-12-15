@@ -9,6 +9,8 @@ import java.security.DigestInputStream;
 import java.security.MessageDigest;
 import java.security.NoSuchAlgorithmException;
 
+import Analyzer.Control.ErrorManager;
+
 /**
  * Class defining the FileNode object in FileTree
  * 
@@ -70,15 +72,18 @@ public class FileNode extends File implements Serializable
             catch (NoSuchAlgorithmException error)
             {
                 System.out.println("Hashage impossible, algorithme non supporté.");
+                ErrorManager.throwError(error);
             }
             catch (FileNotFoundException error)
             {
                 error.printStackTrace();
                 System.out.println("Hashage impossible, fichier non trouvé.");
+                ErrorManager.throwError(error);
             }
             catch (IOException error)
             {
                 System.out.println("Hashage interrompu, erreur de lecture.");
+                ErrorManager.throwError(error);
             }
 
             return hash;

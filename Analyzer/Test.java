@@ -11,6 +11,7 @@ import java.util.Map;
 import javax.swing.tree.DefaultMutableTreeNode;
 
 import Analyzer.Control.CacheManager;
+import Analyzer.Control.ErrorManager;
 import Analyzer.Model.FileNode;
 import Analyzer.Model.FileTree;
 import Analyzer.Service.Analyzer;
@@ -87,6 +88,7 @@ public class Test
         catch (IOException io)
         {
             io.printStackTrace();
+            ErrorManager.throwError(io);
         }
     }
 

@@ -3,3 +3,5 @@
 /FileTreeListener.class
 /SystemListener.class
 /ThreadManager.class
+/ErrorHandler.class
+/ErrorManager.class

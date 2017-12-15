@@ -14,6 +14,7 @@ import java.util.Map;
 import java.util.concurrent.Callable;
 
 import Analyzer.Control.CacheManager;
+import Analyzer.Control.ErrorManager;
 import Analyzer.Model.FileNode;
 
 /**
@@ -128,6 +129,7 @@ public class DuplicatesFinder implements FileVisitor<Path>, Callable
         catch (IOException error)
         {
             System.out.println("Error while parsing files");
+            ErrorManager.throwError(error);
             return null;
         }
         for (String hash : duplicates.keySet())

@@ -156,10 +156,12 @@ public class CacheManager
             catch (IOException error)
             {
                 error.printStackTrace();
+                ErrorManager.throwError(error);
             }
             catch (ClassNotFoundException error)
             {
                 error.printStackTrace();
+                ErrorManager.throwError(error);
             }
         }
     }

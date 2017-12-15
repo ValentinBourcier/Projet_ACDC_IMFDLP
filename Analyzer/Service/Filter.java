@@ -7,6 +7,8 @@ import java.util.Date;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
+import Analyzer.Control.ErrorManager;
+
 /**
  * Class defining a file filter
  * 
@@ -61,6 +63,7 @@ public class Filter implements FileFilter
         	}catch(Exception error){
         		System.out.println("Invalid pattern");
         		error.printStackTrace();
+                ErrorManager.throwError(error);
         		System.exit(1);
         	}
         }

@@ -17,6 +17,7 @@ import java.util.concurrent.Future;
 import javax.swing.tree.DefaultMutableTreeNode;
 
 import Analyzer.Control.CacheManager;
+import Analyzer.Control.ErrorManager;
 import Analyzer.Control.ThreadManager;
 import Analyzer.Service.Filter;
 
@@ -191,6 +192,7 @@ public class FileTreeFactory implements FileVisitor<Path>, Callable
         {
             error.printStackTrace();
             System.out.println("Error while creating FileTree");
+            ErrorManager.throwError(error);
         }
 
         if (thread)

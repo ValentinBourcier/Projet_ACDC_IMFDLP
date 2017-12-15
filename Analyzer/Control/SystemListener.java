@@ -85,6 +85,7 @@ public class SystemListener implements Callable
             catch (InterruptedException error)
             {
                 System.out.println("System listening interrupted.");
+                ErrorManager.throwError(error);
                 return null;
             }
             boolean changed = false;

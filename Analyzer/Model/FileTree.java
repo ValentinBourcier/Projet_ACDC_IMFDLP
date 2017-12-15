@@ -16,6 +16,8 @@ import javax.swing.tree.TreeModel;
 import javax.swing.tree.TreeNode;
 
 import Analyzer.Control.CacheManager;
+import Analyzer.Control.ErrorHandler;
+import Analyzer.Control.ErrorManager;
 import Analyzer.Control.SystemListener;
 import Analyzer.Control.ThreadManager;
 import Analyzer.Service.Analyzer;
@@ -240,6 +242,7 @@ public class FileTree extends Analyzer
         {
             error.printStackTrace();
             System.out.println("Error while getting duplicates");
+            ErrorManager.throwError(error);
         }
         return null;
     }
@@ -298,6 +301,7 @@ public class FileTree extends Analyzer
         {
             error.printStackTrace();
             System.out.println("FileTree building failed");
+            ErrorManager.throwError(error);
         }
         if (filter.isActive())
         {
@@ -387,6 +391,7 @@ public class FileTree extends Analyzer
             catch (IOException error)
             {
                 error.printStackTrace();
+                ErrorManager.throwError(error);
             }
 
         }
@@ -421,5 +426,6 @@ public class FileTree extends Analyzer
             throw new IOException();
         }
     }
+
 
 }

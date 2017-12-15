@@ -8,6 +8,7 @@ import javax.swing.JFrame;
 import javax.swing.JScrollPane;
 import javax.swing.JTree;
 
+import Analyzer.Control.ErrorManager;
 import Analyzer.Control.FileTreeListener;
 import Analyzer.Model.FileTree;
 import Analyzer.Service.Analyzer;
@@ -102,6 +103,7 @@ public class Command
                     catch (Exception error)
                     {
                         System.out.println("Error while executing command, -mD, maxDepth should be an integer.");
+                        ErrorManager.throwError(error);
                         return false;
                     }
                 }
@@ -123,6 +125,7 @@ public class Command
                     catch (Exception error)
                     {
                         System.out.println("Error while executing command, -d, delay should be an integer.");
+                        ErrorManager.throwError(error);
                         return false;
                     }
                 }
@@ -267,7 +270,9 @@ public class Command
                 }
                 else if (command.equals("help"))
                 {
-                    System.out.println("Sorry, command you've asked for is unknown.");
+                	String message = "Sorry, command you've asked for is unknown.";
+                    System.out.println(message);
+                    ErrorManager.throwError(new Exception(message));
                     help();
 
                 }

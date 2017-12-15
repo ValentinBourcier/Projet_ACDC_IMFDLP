@@ -9,6 +9,8 @@ import javax.swing.tree.DefaultMutableTreeNode;
 import javax.swing.tree.TreeModel;
 
 import Analyzer.Control.CacheManager;
+import Analyzer.Control.ErrorHandler;
+import Analyzer.Control.ErrorManager;
 import Analyzer.Control.FileTreeListener;
 import Analyzer.Control.SystemListener;
 import Analyzer.Model.FileNode;
@@ -107,6 +109,14 @@ public abstract class Analyzer
      * @param millisRefresh Refreshing delay in milli-seconds
      */
     public abstract void listenSystemChanges(int millisRefresh);
+    
+    /**
+     * Method used to add an error handler on the system
+     * @param handler ErrorHandler object
+     */
+    public void addErrorHandler(ErrorHandler handler) {
+    	ErrorManager.addHandler(handler);
+    }
 
     /**
      * Method to add a listener on FileTree updates
