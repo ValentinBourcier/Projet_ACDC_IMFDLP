@@ -5,9 +5,9 @@
     <id>UMLClass</id>
     <coordinates>
       <x>220</x>
-      <y>80</y>
+      <y>70</y>
       <w>540</w>
-      <h>230</h>
+      <h>240</h>
     </coordinates>
     <panel_attributes>/*Analyzer*/
 &lt;&lt; interface &gt;&gt;
@@ -22,6 +22,7 @@
 + getTreeModel(): TreeModel
 + getWeight(DefaultMutableTreeNode): long
 + listenSystemChanges(int): void
++ addFileTreeListener(FileTreeListener): void
 + toString(): String</panel_attributes>
     <additional_attributes/>
   </element>

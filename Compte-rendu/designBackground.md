@@ -88,7 +88,7 @@ Depuis le modèle, et au travers de l'interface Analyzer, on peut également lan
 
 ![Système/Analyseur](diagrams/Analyzer.png)
 
-Je n'ai pas fait apparaître dans le diagramme le singeleton ThreadManager, pour des questions de lisibilité.
+Je n'ai pas fait apparaître dans le diagramme le singeleton ThreadManager et ErrorHandler, pour des questions de lisibilité, car ces classes peuvent êtres appellées dans l'ensemble du système.
 
 ### 3.1 - Options et paramétrage du système
 
