@@ -95,4 +95,32 @@ Le système a été conçu avec un certain nombre d'options. En effet, selon son
 
 ### 3.3 - Lancement en ligne de commande
 
-Pour lancer le programme en ligne de commande il suffit
+Pour lancer le programme en ligne de commande il suffit de se déplacer dans le répertoire qui contient l'archive exécutable IMFDLP.jar. Une fois ceci effectué, il faut taper dans un terminal la commande suivante: "java -jar IMFDLP.jar". Un menu d'aide devra s'afficher, comme celui-ci: 
+```
+# ILMFDLP help page: 
+
+##### Command list #####
+# duplicates   -> Getting duplicates from a root path.
+# weight       -> Return the weight of the directory path.
+# depth        -> Getting the depth of tree builded from the path.
+# listenSystem -> Listen system changes. Require -cache option.
+# cleanCache   -> Command which is cleaning the tree cache.
+####### Options #######
+# -hash   -> Hash files while building the tree. (default: false)
+# -cache  -> Record files in cache. (default: false)
+# -print  -> Print the tree while ending the command (default: false)
+# -mD ..  -> Integer corresponding to the max depth of tree you want to build (default: none, 0)
+# -d ..   -> Millisecond delay between to checking of the FileTree changes. (default: 60000)
+# -p ..   -> Required most of the time (not with test, help commands). Path of your folder, tree.
+```
+Comme vous pouvez le voir, ce menu indique les fonctionnalités exécutables en ligne de commande. Avec l'interface graphique, plus d'options seront disponibles car le paramétrage est plus facile, il nécessite moins d'arguments. De plus dans notre cas, à chaque commande que l'on exécute, on relance une instance de la JVM et donc on perd tous nos objets Java, on augmente donc la charge de calcul sion effectue plusieurs commandes à la suite.
+
+## 4 - Retour personnel sur le projet
+
+### 4.1 - Difficultées rencontrées
+
+Lors de ce projet la tâche que j'ai trouvé la plus complexe était de savoir quelle approche algorithmique allait être la plus efficace. En effet, plusieurs solutions étaient possibles, et de fortes notions de complexités étaient liées à ce projet. De plus, avant de définir l'API avec mes collègues sur ce projet, je pensais effectuer ma propre structure afin qu'elle soit modulable et modifiable aisément. En effet, le fait d'avoir choisi de renvoyer l'arbre sous forme de TreeModel en prévision de la conception graphique m'a obligé a utiliser DefaultMutableTreeNode pour définir l'arborescence dans un soucis de temps de calcul. Or cette structure présente comme principal défaut sa difficulté d'accès, de parcours. Toutes les opérations sur un arbre qui résulte de cette classe s'effectue au minimum en temps linéraire, et parfois en O(n^2). Cela m'a obligé à être particulièremetnt attentif à la façon d'écrire mes algorithmes et d'utiliser le cache.
+
+### 4.2 - Expérience personnelle
+
+J'ai beaucoup apprécié cette première partie du projet malgré les difficultés que j'ai pu rencontré tout au long de sa réalisation. En effet, celui-ci m'a permis d'appréhender le fonctionnement des systèmes de fichiers de manière plus précise qu'auparavant. J'ai également pu me confronter à des problématiques assez complexes et a de nombreux outils pour effectuer ce type de tâches, comme la technologie de surveillance des arborescences multiplateforme, WatchService. 
