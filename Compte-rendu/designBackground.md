@@ -73,7 +73,7 @@ Comme nous l'avons précédemment vu, l'ensemble des fonctionnalités proposées
 Depuis le modèle, et au travers de l'interface Analyzer, on peut également lancer une recherche de doublons, après avoir créé un filtre de fichiers si l'on souhaite restreindre la recherche.
 
 
-Lien vers le diagramme: [Système/Analyseur](diagrams/Analyser.png).
+Lien vers le diagramme: [Système/Analyseur](diagrams/Analyzer.png).
 
 ### 3.1 - Options et paramétrage du système
 
