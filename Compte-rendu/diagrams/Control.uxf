@@ -91,7 +91,7 @@ notify &gt;</panel_attributes>
     <coordinates>
       <x>170</x>
       <y>240</y>
-      <w>250</w>
+      <w>260</w>
       <h>70</h>
     </coordinates>
     <panel_attributes>*ThreadManager*
