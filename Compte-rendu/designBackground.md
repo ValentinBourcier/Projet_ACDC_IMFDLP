@@ -49,7 +49,7 @@ Le modèle comprend trois classes:
 
 - La classe _FileTreeFactory_ qui permet le remplissage de l'arborescence de _DefaultMutableTreeNode_ en Java à partir de la lecture du système via la librairie _WalkFileTree_. [FileTreeFactory](../doc/Analyzer/Model/FileTreeFactory.html)
 
-Lien vers le diagramme: [Modèle](diagrams/Model.png).
+Lien vers le diagramme: ![Modèle](diagrams/Model.png).
 
 ### 2.2 - Contrôleurs
 
@@ -62,7 +62,7 @@ Le package _Control_ contient les trois classes qui gèrent les données qui se 
 
 - _ThreadManager_ est un singleton qui met à disposition des autres classes une instance du framework _Executor_ utilisé pour la gestion des threads. J'ai choisi cette solution car le niveau de parallélisme s'adapte au système qui fait tourner le programme, de plus, ce framework permet de mettre en place des "Pool" de threads dynamiques et qui supportent le Work-Stealing à l'aide d'un processus de mise en cache.
 
-Lien vers le diagramme: [Contrôleurs](diagrams/Control.png).
+Lien vers le diagramme: ![Contrôleurs](diagrams/Control.png).
 
 ### 2.3 - Services
 
@@ -77,12 +77,12 @@ Fonctionnement des services:
 
 -  **DuplicatesFinder**: Le duplicates finder, ou chercheur de doublons en Français lit le système depuis le chemin qu'on lui indique et fait correspondre un hash avec une liste de doublons. Cette classe utilise la mise en cache des fichiers de la façon suivante. Si le fichier que l'on rencontre dans le système n'est pas présent dans le cache, alors on l'ajoute et on calcule son hash. Sinon on l'ajoute directement dans notre structure de retour.
 
-Lien vers le diagramme: [Services](diagrams/Service.png).
+Lien vers le diagramme: ![Services](diagrams/Service.png).
 
 ## 3 - Fonctionnement du système
 
 Comme nous l'avons précédemment vu, l'ensemble des fonctionnalités proposées par l'analyseur de disque implémenté dans ce projet sont accessibles via l'interface Analyzer. Cette interface est implémentée par la classe FileTree du package Model. En effet, toutes les opérations qui sont à effectuer sont lancées depuis une arborescence, il est donc logique que le modèle de données implémente l'API que nous fournissons. Le modèle, notamment l'arborescence de fichiers de la classe FileTree, ainsi que l'arborescence du système d'exploitation peuvent être surveillés via les contrôleurs qui vérifient les changements des données et qui se chargent de leur stockage en vue de leurs futures restaurations.
-Depuis le modèle, et au travers de l'interface Analyzer, on peut également lancer une recherche de doublons, après avoir créé ou non un filtre de fichiers si l'on souhaite restreindre la recherche. Le tout s'articule de la façon suivante: [Système/Analyseur](diagrams/Analyzer.png). Je n'ai pas fait apparaître dans le diagramme le singeleton ThreadManager, pour des questions de lisibilité.
+Depuis le modèle, et au travers de l'interface Analyzer, on peut également lancer une recherche de doublons, après avoir créé ou non un filtre de fichiers si l'on souhaite restreindre la recherche. Le tout s'articule de la façon suivante: ![Système/Analyseur](diagrams/Analyzer.png). Je n'ai pas fait apparaître dans le diagramme le singeleton ThreadManager, pour des questions de lisibilité.
 
 ### 3.1 - Options et paramétrage du système
 
