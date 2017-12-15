@@ -28,6 +28,8 @@ public class Test
 
     /**
      * Method allowing to delete the test tree when cases are executed.
+     * @param file File object to delete
+     * @throws IOException if file deleting failed
      */
     public static void delete(File file) throws IOException
     {

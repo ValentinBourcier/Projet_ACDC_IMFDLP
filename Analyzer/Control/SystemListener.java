@@ -31,6 +31,7 @@ public class SystemListener implements Callable
      * Method to set the tree that will be updated
      * @param tree FileTree to update on system changes
      */
+    @SuppressWarnings("hiding")
     public void registerTree(FileTree tree)
     {
         this.tree = tree;
@@ -40,6 +41,7 @@ public class SystemListener implements Callable
      * Method setting the refreshing delay
      * @param delay Refreshing delay in milliseconds
      */
+    @SuppressWarnings("hiding")
     public void setDelay(int delay)
     {
         this.delay = delay;
@@ -56,6 +58,7 @@ public class SystemListener implements Callable
 
     /**
      * Method throwing the update Event
+     * @param nbChanges Number of changes observed in FileTree
      */
     public synchronized void throwUpdateEvent(int nbChanges)
     {
@@ -68,6 +71,7 @@ public class SystemListener implements Callable
     /**
      * Method listening on the system changes
      */
+    @SuppressWarnings("null")
     @Override
     public Object call() throws Exception
     {

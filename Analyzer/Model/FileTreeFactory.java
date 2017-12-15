@@ -45,6 +45,7 @@ public class FileTreeFactory implements FileVisitor<Path>, Callable
      * @param rootPath Path of the root file
      * @param root The root object of the future FileTree
      * @param filter The Filter used to restrict files in the Tree
+     * @param thread Boolean, equals true for building the FileTree using threads (increase required resources)
      * @param hash Boolean equals to True if the factory should hash files
      * @param recordInCache Boolean equals to True if the factory should use the cache
      * @param maxDepth Integer equivalent to the max depth of the tree that you want to build

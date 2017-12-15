@@ -114,6 +114,7 @@ public class Filter implements FileFilter
      * Adding a file weight equality constraint
      * @param weight Weight that the file should have
      */
+    @SuppressWarnings("hiding")
     public void weightEq(long weight)
     {
         this.weight = weight;
@@ -125,6 +126,7 @@ public class Filter implements FileFilter
      * Adding a file weight constraint (greater than)
      * @param weight Weight that the file should be greater than
      */
+    @SuppressWarnings("hiding")
     public void weightGt(long weight)
     {
         this.weight = weight;
@@ -136,6 +138,7 @@ public class Filter implements FileFilter
      * Adding a file weight constraint (lower than)
      * @param weight Weight that the file should be lower than
      */
+    @SuppressWarnings("hiding")
     public void weightLw(long weight)
     {
         this.weight = weight;
@@ -156,6 +159,7 @@ public class Filter implements FileFilter
      * Adding a date equality constraint
      * @param date Modification date of the file that should be verified
      */
+    @SuppressWarnings("hiding")
     public void dateEq(Date date)
     {
         this.date = date.getTime();
@@ -167,6 +171,7 @@ public class Filter implements FileFilter
      * Adding a date constraint (Older than)
      * @param date Modification date of the file that should be verified
      */
+    @SuppressWarnings("hiding")
     public void dateGt(Date date)
     {
         this.date = date.getTime();
@@ -178,6 +183,7 @@ public class Filter implements FileFilter
      * Adding a date constraint (Less older than)
      * @param date Modification date of the file that should be verified
      */
+    @SuppressWarnings("hiding")
     public void dateLw(Date date)
     {
         this.date = date.getTime();
@@ -214,7 +220,9 @@ public class Filter implements FileFilter
 
     /**
      * Method setting a pattern restriction
+     * @param pattern A string regexp
      */
+    @SuppressWarnings("hiding")
     public void setPattern(String pattern)
     {
         this.pattern = pattern;

@@ -35,6 +35,7 @@ public abstract class Analyzer
      * @param thread Boolean, equals true for building the FileTree using threads (increase required resources)
      * @param hash Boolean, equals true for hashing files on tree building, false either
      * @param recordInCache Boolean, equals true for saving tree files on cache.
+     * @param maxDepth Integer equivalent to the max depth of the tree that you want to build
      * @return The DefaultMutableTreeNode root of the Tree in a thread result object.
      */
     public abstract Future<DefaultMutableTreeNode> buildFileTree(String rootPath,
@@ -50,6 +51,7 @@ public abstract class Analyzer
      * @param thread Boolean, equals true for building the FileTree using threads (increase required resources)
      * @param hash Boolean, equals true for hashing files on tree building, false either
      * @param recordInCache Boolean, equals true for saving tree files on cache.
+     * @param maxDepth Integer equivalent to the max depth of the tree that you want to build
      * @return The DefaultMutableTreeNode root of the Tree in a thread result object.
      */
     public abstract Future<DefaultMutableTreeNode> buildFileTree(String rootPath, Boolean thread, Boolean hash, Boolean recordInCache, int maxDepth);
@@ -117,13 +119,15 @@ public abstract class Analyzer
 
     /**
      * Method allowing to get the weight of a tree/sub-tree, from a node path
-     * @return The number of Bytes reprenseting the weight of the node.
+     * @param path String representation of the tree root path 
+     * @return The number of Bytes representing the weight of the node.
      */
     public abstract long getWeight(String path);
 
     /**
      * Method getting the weight of a tree/sub-tree
-     * @return The number of Bytes reprenseting the weight of the node.
+     * @param node Root of the tree that we would like to get he weight
+     * @return The number of Bytes representing the weight of the node.
      */
     public abstract long getWeight(DefaultMutableTreeNode node);
 

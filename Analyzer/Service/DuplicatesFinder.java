@@ -35,6 +35,7 @@ public class DuplicatesFinder implements FileVisitor<Path>, Callable
      * @param rootPath Path of the root file
      * @param filter Filter instance checking duplicates files validity
      */
+    @SuppressWarnings("hiding")
     public DuplicatesFinder(Path rootPath, Filter filter)
     {
         this.filter = filter;

@@ -36,6 +36,7 @@ public class CacheManager
 
     /**
      * Thread safe singleton implementation
+     * @return The cache manager instance
      */
     public static synchronized CacheManager getInstance()
     {
@@ -69,6 +70,7 @@ public class CacheManager
     /**
      * Method collecting 
      * @param path Path of the file to remove
+     * @return FileNode instance of file at path
      */
     public FileNode get(String path)
     {
