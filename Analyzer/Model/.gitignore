@@ -1,3 +1,5 @@
 /FileNode.class
 /FileTree.class
 /FileTreeFactory.class
+/FileTreeFactory$ThreadManager.class
+/FileTreeFactory$ExecutorManager.class

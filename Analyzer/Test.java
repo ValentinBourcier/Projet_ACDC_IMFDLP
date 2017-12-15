@@ -16,147 +16,175 @@ import Analyzer.Model.FileTree;
 import Analyzer.Service.Analyzer;
 import Analyzer.Service.Filter;
 
-public class Test {
-	
-	public static Analyzer analyzer = new FileTree();
+/**
+ * Class executing Unit tests
+ * 
+ *  @author Valentin Bourcier
+ */
+public class Test
+{
 
-	/**
-	 * Method allowing to delete the test tree when cases are executed.
-	 */
-    public static void delete(File file) throws IOException {
-    	for (File childFile : file.listFiles()) {
-            if (childFile.isDirectory()) {
+    public static Analyzer analyzer = new FileTree();
+
+    /**
+     * Method allowing to delete the test tree when cases are executed.
+     */
+    public static void delete(File file) throws IOException
+    {
+        for (File childFile : file.listFiles())
+        {
+            if (childFile.isDirectory())
+            {
                 delete(childFile);
-            } else {
-                if (!childFile.delete()) {
+            }
+            else
+            {
+                if (!childFile.delete())
+                {
                     throw new IOException();
                 }
             }
         }
-    	file.delete();
+        file.delete();
     }
-    
+
     /**
      * Method which build a tree for unit cases execution 
      */
-    public static void buildUnitTestTree() {
-    	try {
-			File dir = new File ("tests");
-			if(dir.exists() && dir.isDirectory()) {
-				delete(dir);
-			}
-			dir.mkdir();
-			dir = new File("tests/folder1");
-			dir.mkdir();
-			dir = new File("tests/folder2");
-			dir.mkdir();
-			FileWriter file = new FileWriter(new File("tests/folder1/duplicated-file1"), true);
-		    file.write("duplicates1");
-		    file.close();
-		    file = new FileWriter(new File("tests/folder1/duplicated-file2"), true);
-		    file.write("duplicates2");
-		    file.close();
+    public static void buildUnitTestTree()
+    {
+        try
+        {
+            File dir = new File("tests");
+            if (dir.exists() && dir.isDirectory())
+            {
+                delete(dir);
+            }
+            dir.mkdir();
+            dir = new File("tests" + File.separator + "folder1");
+            dir.mkdir();
+            dir = new File("tests" + File.separator + "folder2");
+            dir.mkdir();
+            FileWriter file = new FileWriter(new File("tests" + File.separator + "folder1" + File.separator + "duplicated-file1"), true);
+            file.write("duplicates1");
+            file.close();
+            file = new FileWriter(new File("tests" + File.separator + "folder1" + File.separator + "duplicated-file2"), true);
+            file.write("duplicates2");
+            file.close();
 
-			file = new FileWriter(new File("tests/folder2/duplicated-file1"), true);
-		    file.write("duplicates1");
-		    file.close();
-		    file = new FileWriter(new File("tests/folder2/duplicated-file2"), true);
-		    file.write("duplicates2");
-		    file.close();
-		    dir = new File("tests/folder2/empty-folder");
-			dir.mkdir();
-			
-    	} catch(IOException io) {
-    		io.printStackTrace();
-    	}
+            file = new FileWriter(new File("tests" + File.separator + "folder2" + File.separator + "duplicated-file1"), true);
+            file.write("duplicates1");
+            file.close();
+            file = new FileWriter(new File("tests" + File.separator + "folder2" + File.separator + "duplicated-file2"), true);
+            file.write("duplicates2");
+            file.close();
+            dir = new File("tests" + File.separator + "folder2" + File.separator + "empty-folder");
+            dir.mkdir();
+
+        }
+        catch (IOException io)
+        {
+            io.printStackTrace();
+        }
     }
-    
+
     /**
      * Build the file tree without hashing or storing files. 
      */
-    public static void testBuildFileTree(){
+    public static void testBuildFileTree()
+    {
         System.out.println("#### Building the test tree ####\n");
-        analyzer.buildFileTree("tests", false, false, 0);
+        analyzer.buildFileTree("tests", false, false, false, 0);
         System.out.println(analyzer);
     }
-    
+
     /**
      * Collecting duplicates without filtering it
      */
-    public static void testDuplicates(){
+    public static void testDuplicates()
+    {
         System.out.println("\n#### Searching duplicates ####\n");
         Map<String, List<File>> dup = analyzer.getDuplicates("tests", new Filter());
-        for (String hash : dup.keySet()) {
-            for (File file: dup.get(hash)) {
+        for (String hash : dup.keySet())
+        {
+            for (File file : dup.get(hash))
+            {
                 System.out.println(hash + " -> " + file.getAbsolutePath());
             }
         }
     }
-    
+
     /**
      * Cleaning cache, then test serialization
      */
-    public static void testCache(){
-        
-    	System.out.println("\n#### Testing cache ####\n");
-    	
+    public static void testCache()
+    {
+
+        System.out.println("\n#### Testing cache ####\n");
+
         System.out.println("Deleting cache if exists");
         analyzer.cleanCache();
-        
+
         // Building a FileTree in order to put some files in cache
         System.out.println("Filling cache");
-        analyzer.buildFileTree("tests", false, true, 0);
-        
+        analyzer.buildDefaultFileTree("tests");
+
         System.out.println("Cache is initialized ? -> " + Files.exists(Paths.get(CacheManager.LOCATION)));
     }
-    
+
     /**
      * Cleaning cache, then test serialization
      */
-    public static void testDeletion(){
+    public static void testDeletion()
+    {
         System.out.println("\n#### Testing deletion ####\n");
-        analyzer.buildFileTree("tests", false, true, 0);
-        analyzer.deleteNode("tests/folder1/duplicated-file1");
-        System.out.println("File correctly deleted ? -> " + !Files.exists(Paths.get("folder1/duplicated-file1")));
+        analyzer.buildDefaultFileTree("tests");
+        analyzer.deleteNode("tests" + File.separator + "folder1" + File.separator + "duplicated-file1");
+        System.out.println("File correctly deleted ? -> " + !Files.exists(Paths.get("folder1" + File.separator + "duplicated-file1")));
     }
-    
+
     /**
      * Cleaning cache, then test serialization
      */
-    public static void testGetFileNodeAndWeight(){
-    	System.out.println("\n#### Testing getNode and getWeight ####\n");
-        analyzer.buildFileTree("tests", false, true, 0);
+    public static void testGetFileNodeAndWeight()
+    {
+        System.out.println("\n#### Testing getNode and getWeight ####\n");
+        analyzer.buildDefaultFileTree("tests");
         DefaultMutableTreeNode root = analyzer.getRoot();
         FileNode fileRoot = analyzer.getFileNode(root);
-        System.out.println("FileNode == fileRoot ? -> " + (fileRoot == ((FileNode) root.getUserObject())));
+        System.out.println("FileNode == fileRoot ? -> " + (fileRoot == (FileNode) root.getUserObject()));
         System.out.println("Tree weight (33) -> " + analyzer.getWeight(root));
     }
-    
+
     /**
      * Deleting empty directories from File Tree 
      */
-    public static void testCleanEmptyFolders(){
-    	System.out.println("\n#### Testing empty folders cleaning in FileTree ####\n");
-        analyzer.buildFileTree("tests", false, true, 0);
+    public static void testCleanEmptyFolders()
+    {
+        System.out.println("\n#### Testing empty folders cleaning in FileTree ####\n");
+        analyzer.buildDefaultFileTree("tests");
         System.out.println(analyzer);
         analyzer.cleanEmptyFolders();
         System.out.println(analyzer);
     }
-    
-    public static void launchTests() {
-    	Test.buildUnitTestTree();
-		Test.testBuildFileTree();
-		Test.testDuplicates();
-		Test.testCache();
-		Test.testDeletion();
-		Test.testGetFileNodeAndWeight();
-		Test.testCleanEmptyFolders();
-        try {
-			Test.delete(new File("tests"));
-		} catch (IOException e) {
-			e.printStackTrace();
-		}
+
+    public static void launchTests()
+    {
+        Test.buildUnitTestTree();
+        Test.testBuildFileTree();
+        Test.testDuplicates();
+        Test.testCache();
+        Test.testDeletion();
+        Test.testGetFileNodeAndWeight();
+        Test.testCleanEmptyFolders();
+        try
+        {
+            Test.delete(new File("tests"));
+        }
+        catch (IOException e)
+        {
+            e.printStackTrace();
+        }
     }
-    
-	
+
 }

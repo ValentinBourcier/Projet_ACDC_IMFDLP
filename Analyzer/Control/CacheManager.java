@@ -17,9 +17,10 @@ import Analyzer.Model.FileNode;
  * 
  * @author Valentin Bourcier
  */
-public class CacheManager {
-    
-    private HashMap<String, FileNode> cache = new HashMap<>();
+public class CacheManager
+{
+
+    private HashMap<String, FileNode> cache = new HashMap<String, FileNode>();
     public static String LOCATION = "tree.cache";
     private Boolean modified;
     private static CacheManager manager;
@@ -27,48 +28,53 @@ public class CacheManager {
     /**
      * Cache initialization
      */
-    private CacheManager(){
-        cache = new HashMap<>();
+    private CacheManager()
+    {
+        cache = new HashMap<String, FileNode>();
         modified = false;
     }
-    
-    
+
     /**
      * Thread safe singleton implementation
      */
-    public static synchronized CacheManager getInstance(){
-        if(manager == null){
+    public static synchronized CacheManager getInstance()
+    {
+        if (manager == null)
+        {
             manager = new CacheManager();
         }
         return manager;
     }
-    
-    
+
     /**
      * Method to add a file in cache
      * @param file FileNode instance to save
      */
-    public void add(FileNode file){
-        this.cache.put(file.getAbsolutePath(), file);
-        this.modified = true;
+    public void add(FileNode file)
+    {
+        cache.put(file.getAbsolutePath(), file);
+        modified = true;
     }
-    
+
     /**
      * Method removing a file from cache
      * @param path Path of the file to remove
      */
-    public void remove(String path){
-        this.cache.remove(path);
-        this.modified = true;
+    public void remove(String path)
+    {
+        cache.remove(path);
+        modified = true;
     }
-    
+
     /**
      * Method collecting 
      * @param path Path of the file to remove
      */
-    public FileNode get(String path){
-        if(isSet()){
-            return this.cache.get(path);
+    public FileNode get(String path)
+    {
+        if (isSet())
+        {
+            return cache.get(path);
         }
         throw new UnsupportedOperationException("Cache is not Set.");
     }
@@ -77,76 +83,94 @@ public class CacheManager {
      * Method checking if cache is set
      * @return True if the cache is saved in system
      */
-    public boolean isSet(){
+    public boolean isSet()
+    {
         return Files.exists(Paths.get(LOCATION));
     }
-    
-    public boolean contains(String path){
-        if(isSet()){
-            return this.cache.containsKey(path);
+
+    public boolean contains(String path)
+    {
+        if (isSet())
+        {
+            return cache.containsKey(path);
         }
         return false;
     }
-    
-    public FileNode getMoreRecent(String path){
+
+    public FileNode getMoreRecent(String path)
+    {
         FileNode cacheNode = get(path);
         FileNode systemNode = new FileNode(path);
-        return cacheNode.INSTANCE_TIME > systemNode.lastModified() ? cacheNode : systemNode; 
+        return cacheNode.INSTANCE_TIME > systemNode.lastModified() ? cacheNode : systemNode;
     }
-    
+
     /**
      * Method updating a file in cache
      * @param path Path of the file to update
      */
-    public void update(String path){
-        this.cache.put(path, getMoreRecent(path));
+    public void update(String path)
+    {
+        cache.put(path, getMoreRecent(path));
     }
-    
+
     /**
      * Method which serialize the cache 
      */
-    public void serialize(){
-        if(modified){
-            try{
+    public void serialize()
+    {
+        if (modified)
+        {
+            try
+            {
                 FileOutputStream file = new FileOutputStream(LOCATION, false);
                 ObjectOutputStream stream = new ObjectOutputStream(file);
                 stream.writeObject(cache);
                 stream.close();
                 file.close();
-            }catch(IOException error){
+            }
+            catch (IOException error)
+            {
                 error.printStackTrace();
             }
         }
     }
-    
+
     /**
      * Method unserializing the cache
      */
-    @SuppressWarnings({ "unchecked", "rawtypes" })
-	public void unserialize(){
-        if(isSet()){
+    @SuppressWarnings({"unchecked", "rawtypes"})
+    public void unserialize()
+    {
+        if (isSet())
+        {
             try
             {
                 FileInputStream file = new FileInputStream(LOCATION);
                 ObjectInputStream stream = new ObjectInputStream(file);
-                this.cache = (HashMap) stream.readObject();
+                cache = (HashMap) stream.readObject();
                 stream.close();
                 file.close();
-            }catch(IOException error){
+            }
+            catch (IOException error)
+            {
                 error.printStackTrace();
-            }catch(ClassNotFoundException error){
+            }
+            catch (ClassNotFoundException error)
+            {
                 error.printStackTrace();
             }
         }
     }
-    
+
     /**
      * Method deleting cache from system and reseting cache in JVM
      */
-    public void clean(){
-        if(isSet()){
+    public void clean()
+    {
+        if (isSet())
+        {
             new File(LOCATION).delete();
         }
     }
-    
+
 }
