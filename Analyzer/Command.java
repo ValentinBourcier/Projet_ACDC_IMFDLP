@@ -64,6 +64,7 @@ public class Command
                 if (!args[i + 1].startsWith("-"))
                 {
                     regexp = args[i + 1];
+                    regexp = regexp.replaceAll("\"", "");
                     i++;
                 }
                 else
@@ -166,11 +167,11 @@ public class Command
         {
             if (path != null)
             {
-                path = path.replace("\"", "");
+                path = path.replaceAll("\"", "");
             }
             if (command != null)
             {
-                command = command.replace("\"", "");
+                command = command.replaceAll("\"", "");
             }
         }
         return true;

@@ -188,8 +188,9 @@ public class FileTree extends Analyzer
             if (node.getUserObject() instanceof File)
             {
                 File file = (File) node.getUserObject();
-                if (file.isDirectory() && file.listFiles().length == 0)
+                if (file.isDirectory() && node.isLeaf())
                 {
+                	node.removeAllChildren();
                     node.removeFromParent();
                     en = root.breadthFirstEnumeration();
                 }

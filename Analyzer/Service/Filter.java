@@ -52,6 +52,18 @@ public class Filter implements FileFilter
             accept = accept && directory;
         }
 
+        if (pattern != null)
+        {	
+        	try {
+        		Pattern regexp = Pattern.compile(pattern);
+                Matcher match = regexp.matcher(file.getName());
+                accept = accept && match.find();
+        	}catch(Exception error){
+        		System.out.println("Invalid pattern");
+        		error.printStackTrace();
+        		System.exit(1);
+        	}
+        }
         if (weightGt && weight > 0)
         {
             accept = accept && file.length() > weight;
@@ -91,12 +103,6 @@ public class Filter implements FileFilter
         if (name != null)
         {
             accept = accept && file.getName().contains(name);
-        }
-        if (pattern != null)
-        {
-            Pattern regexp = Pattern.compile(getPattern());
-            Matcher match = regexp.matcher(name);
-            accept = accept && match.find();
         }
         return accept;
     }
@@ -207,15 +213,6 @@ public class Filter implements FileFilter
     public boolean isActive()
     {
         return extensions.isEmpty() == false || name != null || directory == false || date != 0 || weight != 0 || pattern != null;
-    }
-
-    /**
-     * Method allowing to get pattern restriction
-     * @return A regular expression string
-     */
-    public String getPattern()
-    {
-        return pattern;
     }
 
     /**
