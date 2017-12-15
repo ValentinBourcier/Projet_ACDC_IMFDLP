@@ -1,0 +1,89 @@
+<?xml version="1.0" encoding="UTF-8" standalone="no"?>
+<diagram program="umlet" version="14.2">
+  <zoom_level>10</zoom_level>
+  <element>
+    <id>UMLClass</id>
+    <coordinates>
+      <x>480</x>
+      <y>140</y>
+      <w>250</w>
+      <h>70</h>
+    </coordinates>
+    <panel_attributes>/*FileTreeListener*/
+&lt;&lt; Interface &gt;&gt;
+--
++ fileTreeUpdated(FileTree): void</panel_attributes>
+    <additional_attributes/>
+  </element>
+  <element>
+    <id>UMLClass</id>
+    <coordinates>
+      <x>180</x>
+      <y>240</y>
+      <w>230</w>
+      <h>230</h>
+    </coordinates>
+    <panel_attributes>*CacheManager*
+--
+- manager: CacheManager
+- cache: Map&lt;String, FileNode&gt;
+--
++ getInstance(): CacheManager
++ add(FileNode): void
++ clean(): void
++ contains(String): boolean
++ get(String): FileNode
++ isSet(): boolean
++ remove(String): void
++ serialize(): void
++ unserialize(): void
++ update(String): void</panel_attributes>
+    <additional_attributes/>
+  </element>
+  <element>
+    <id>UMLClass</id>
+    <coordinates>
+      <x>440</x>
+      <y>290</y>
+      <w>330</w>
+      <h>180</h>
+    </coordinates>
+    <panel_attributes>*SystemListener*
+--
+- delay: int
+- fileTreeListeners: List
+- tree: FileTree
+--
++ addFileTreeListener(FileTreeListener): void
++ registerTree(FileTree): void
++ run(): void
++ setDelay(int): void
++ throwUpdatedEvent(): void</panel_attributes>
+    <additional_attributes/>
+  </element>
+  <element>
+    <id>Relation</id>
+    <coordinates>
+      <x>590</x>
+      <y>200</y>
+      <w>80</w>
+      <h>110</h>
+    </coordinates>
+    <panel_attributes>lt=-
+m1=0..*
+m2=1
+notify &gt;</panel_attributes>
+    <additional_attributes>10.0;10.0;10.0;90.0</additional_attributes>
+  </element>
+  <element>
+    <id>UMLPackage</id>
+    <coordinates>
+      <x>150</x>
+      <y>90</y>
+      <w>650</w>
+      <h>400</h>
+    </coordinates>
+    <panel_attributes>*Control*</panel_attributes>
+    <additional_attributes/>
+  </element>
+</diagram>

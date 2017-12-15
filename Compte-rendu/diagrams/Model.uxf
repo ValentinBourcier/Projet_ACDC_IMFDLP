@@ -1,0 +1,144 @@
+<?xml version="1.0" encoding="UTF-8" standalone="no"?>
+<diagram program="umlet" version="14.2">
+  <zoom_level>10</zoom_level>
+  <element>
+    <id>UMLClass</id>
+    <coordinates>
+      <x>410</x>
+      <y>110</y>
+      <w>430</w>
+      <h>160</h>
+    </coordinates>
+    <panel_attributes>*FileTreeFactory*
+--
++ call(): DefaultMutableTreeNode
++ postVisitDirectory(Path, IOException): FileVisitResult
++ preVisitDirectory(Path, BasicFileAttribute): FileVisitResult
++ visitFileFailed(Path, IOException): FileVisitResult
++ visitFile(Path, BasicFileAttribute): + FileVisitResult</panel_attributes>
+    <additional_attributes/>
+  </element>
+  <element>
+    <id>UMLClass</id>
+    <coordinates>
+      <x>90</x>
+      <y>360</y>
+      <w>750</w>
+      <h>210</h>
+    </coordinates>
+    <panel_attributes>*FileTree*
+--
++ builFileTree(Options...): void
++ cleanEmptyFolders(): void
++ deleteNode(DefaultMutableTreeNode): void
++ getChildByPath(String): DefaulMutableTreeNode
++ getDepth(): int
++ getDuplicates(DefaultMutableTreeNode, Filter): Map&lt;String, List&lt;File&gt;&gt;
++ getRoot(): DefaultMutableTreeNode
++ getTreeModel(): TreeModel
++ getWeight(DefaultMutableTreeNode): long
++ listenSystemChanges(int): void
++ toString(): String</panel_attributes>
+    <additional_attributes/>
+  </element>
+  <element>
+    <id>UMLClass</id>
+    <coordinates>
+      <x>90</x>
+      <y>180</y>
+      <w>280</w>
+      <h>90</h>
+    </coordinates>
+    <panel_attributes>*FileNode*
+--
++ getHash(): String
++ hash(String algorithme): String
++ toString(): String</panel_attributes>
+    <additional_attributes/>
+  </element>
+  <element>
+    <id>UMLClass</id>
+    <coordinates>
+      <x>90</x>
+      <y>110</y>
+      <w>100</w>
+      <h>50</h>
+    </coordinates>
+    <panel_attributes>*java.io.File*
+--</panel_attributes>
+    <additional_attributes/>
+  </element>
+  <element>
+    <id>Relation</id>
+    <coordinates>
+      <x>130</x>
+      <y>150</y>
+      <w>30</w>
+      <h>50</h>
+    </coordinates>
+    <panel_attributes>lt=&lt;&lt;-</panel_attributes>
+    <additional_attributes>10.0;10.0;10.0;30.0</additional_attributes>
+  </element>
+  <element>
+    <id>Relation</id>
+    <coordinates>
+      <x>280</x>
+      <y>150</y>
+      <w>30</w>
+      <h>50</h>
+    </coordinates>
+    <panel_attributes>lt=&lt;&lt;-</panel_attributes>
+    <additional_attributes>10.0;10.0;10.0;30.0</additional_attributes>
+  </element>
+  <element>
+    <id>UMLClass</id>
+    <coordinates>
+      <x>210</x>
+      <y>110</y>
+      <w>160</w>
+      <h>50</h>
+    </coordinates>
+    <panel_attributes>*java.io.Serializable*
+--</panel_attributes>
+    <additional_attributes/>
+  </element>
+  <element>
+    <id>Relation</id>
+    <coordinates>
+      <x>210</x>
+      <y>260</y>
+      <w>100</w>
+      <h>120</h>
+    </coordinates>
+    <panel_attributes>lt=-
+m1=0..n
+m2=1
+contains &gt;</panel_attributes>
+    <additional_attributes>10.0;10.0;10.0;100.0</additional_attributes>
+  </element>
+  <element>
+    <id>Relation</id>
+    <coordinates>
+      <x>610</x>
+      <y>260</y>
+      <w>80</w>
+      <h>120</h>
+    </coordinates>
+    <panel_attributes>lt=-
+m1=1
+m2=1
+build &gt;</panel_attributes>
+    <additional_attributes>10.0;10.0;10.0;100.0</additional_attributes>
+  </element>
+  <element>
+    <id>UMLPackage</id>
+    <coordinates>
+      <x>60</x>
+      <y>70</y>
+      <w>810</w>
+      <h>530</h>
+    </coordinates>
+    <panel_attributes>*Model*</panel_attributes>
+    <additional_attributes/>
+  </element>
+</diagram>

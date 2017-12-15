@@ -1,0 +1,100 @@
+<?xml version="1.0" encoding="UTF-8" standalone="no"?>
+<diagram program="umlet" version="14.2">
+  <zoom_level>10</zoom_level>
+  <element>
+    <id>UMLClass</id>
+    <coordinates>
+      <x>220</x>
+      <y>80</y>
+      <w>540</w>
+      <h>230</h>
+    </coordinates>
+    <panel_attributes>/*Analyzer*/
+&lt;&lt; interface &gt;&gt;
+--
++ builFileTree(Options...): void
++ cleanEmptyFolders(): void
++ deleteNode(DefaultMutableTreeNode): void
++ getChildByPath(String): DefaulMutableTreeNode
++ getDepth(): int
++ getDuplicates(DefaultMutableTreeNode, Filter): Map&lt;String, List&lt;File&gt; &gt;
++ getRoot(): DefaultMutableTreeNode
++ getTreeModel(): TreeModel
++ getWeight(DefaultMutableTreeNode): long
++ listenSystemChanges(int): void
++ toString(): String</panel_attributes>
+    <additional_attributes/>
+  </element>
+  <element>
+    <id>UMLClass</id>
+    <coordinates>
+      <x>450</x>
+      <y>370</y>
+      <w>440</w>
+      <h>150</h>
+    </coordinates>
+    <panel_attributes>*DuplicatesFinder*
+--
+- duplicates: Map&lt;String, List&lt;File&gt; &gt;
+--
++ call(): Map&lt;String, List&lt;File&gt; &gt;
++ postVisitDirectory(Path, IOException): FileVisitResult
++ preVisitDirectory(Path, BasicFileAttribute): FileVisitResult
++ visitFileFailed(Path, IOException): FileVisitResult
++ visitFile(Path, BasicFileAttribute): + FileVisitResult</panel_attributes>
+    <additional_attributes/>
+  </element>
+  <element>
+    <id>UMLClass</id>
+    <coordinates>
+      <x>80</x>
+      <y>330</y>
+      <w>240</w>
+      <h>270</h>
+    </coordinates>
+    <panel_attributes>*Filter*
+--
+- extensions: List&lt;String&gt;
+- name: String
+- ...
+--
+*+ accept(File) : boolean*
++ accept(Directory): void
++ acceptExtension(String): void
++ dateEq(Date): void
++ dateGt(Date): void
++ dateLw(Date): void
++ isActive(): boolean
++ nameContains(String): void
++ weightEq(Date): void
++ weightGt(Date): void
++ weightLw(Date): void
+   </panel_attributes>
+    <additional_attributes/>
+  </element>
+  <element>
+    <id>Relation</id>
+    <coordinates>
+      <x>310</x>
+      <y>430</y>
+      <w>160</w>
+      <h>50</h>
+    </coordinates>
+    <panel_attributes>lt=-
+m1=0..1
+m2=1
+&lt; check</panel_attributes>
+    <additional_attributes>10.0;20.0;140.0;20.0</additional_attributes>
+  </element>
+  <element>
+    <id>UMLPackage</id>
+    <coordinates>
+      <x>60</x>
+      <y>20</y>
+      <w>860</w>
+      <h>590</h>
+    </coordinates>
+    <panel_attributes>*Service*</panel_attributes>
+    <additional_attributes/>
+  </element>
+</diagram>
