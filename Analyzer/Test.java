@@ -99,6 +99,7 @@ public class Test
     {
         System.out.println("#### Building the test tree ####\n");
         analyzer.buildFileTree("tests", false, false, false, 0);
+        System.out.println("Depth of the tree (2): "+ analyzer.getDepth()+ "\n");
         System.out.println(analyzer);
     }
 

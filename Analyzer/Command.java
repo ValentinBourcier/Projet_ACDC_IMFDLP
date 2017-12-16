@@ -293,6 +293,8 @@ public class Command
     public void help()
     {
         System.out.println("# ILMFDLP help page: \n");
+        
+        System.out.println("Type test if you want to launch unit tests of the system.");
 
         System.out.println("##### Command list #####");
 
