@@ -79,7 +79,7 @@ Fonctionnement des services:
 
 -  **DuplicatesFinder**: Le duplicates finder, ou chercheur de doublons en Français lit le système depuis le chemin qu'on lui indique et fait correspondre un hash avec une liste de doublons. Cette classe utilise la mise en cache des fichiers de la façon suivante. Si le fichier que l'on rencontre dans le système n'est pas présent dans le cache, alors on l'ajoute et on calcule son hash. Sinon on l'ajoute directement dans notre structure de retour.
 
-[Services](diagrams/Service.png) 
+![Services](diagrams/Service.png) 
 
 ## 3 - Fonctionnement du système
 
