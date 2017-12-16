@@ -12,6 +12,7 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.concurrent.Callable;
+import java.util.concurrent.ConcurrentHashMap;
 
 import Analyzer.Control.CacheManager;
 import Analyzer.Control.ErrorManager;
@@ -41,7 +42,7 @@ public class DuplicatesFinder implements FileVisitor<Path>, Callable
     {
         this.filter = filter;
         this.rootPath = rootPath;
-        duplicates = new HashMap<String, List<File>>();
+        duplicates = new ConcurrentHashMap<String, List<File>>();
     }
 
     /**

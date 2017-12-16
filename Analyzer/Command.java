@@ -217,8 +217,12 @@ public class Command
                 if (command.equals("duplicates"))
                 {
 
-                    System.out.println("Duplicates contained in \"" + path + "\" are: ");
                     Map<String, List<File>> dup = analyzer.getDuplicates(path, new Filter());
+                    if(dup.isEmpty()) {
+                    	System.out.println("No duplicates are contained in \"" + path + "\".");
+                    }else {
+                    	System.out.println("Duplicates contained in \"" + path + "\" are: ");                    	
+                    }
                     for (String vHash : dup.keySet())
                     {
                         for (File file : dup.get(vHash))

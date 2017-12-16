@@ -232,7 +232,7 @@ public class FileTree extends Analyzer
         unserializeCache();
         DuplicatesFinder finder = new DuplicatesFinder(Paths.get(path), filter);
         @SuppressWarnings("unchecked")
-        Future<Map<String, List<File>>> duplicated = Executors.newFixedThreadPool(1).submit(finder);
+        Future<Map<String, List<File>>> duplicated = ThreadManager.getThread().submit(finder);
         try
         {
             serializeCache();
