@@ -294,9 +294,9 @@ public class Command
     {
         System.out.println("# ILMFDLP help page: \n");
         
-        System.out.println("Type test if you want to launch unit tests of the system.");
+        System.out.println("Type test if you want to launch unit tests of the system.\n");
 
-        System.out.println("##### Command list #####");
+        System.out.println("##### Command list #####\n");
 
         System.out.println("# duplicates   -> Getting duplicates from a root path.");
         System.out.println("# weight       -> Return the weight of the directory path.");
@@ -305,7 +305,7 @@ public class Command
         System.out.println("# cleanCache   -> Command which is cleaning the tree cache.");
         System.out.println("# ihm          -> Command allowing to test the graphic rendering of the tree.");
 
-        System.out.println("####### Options #######");
+        System.out.println("\n####### Options #######\n");
 
         System.out.println("# -c ..        -> Command you want to execute.");
         System.out.println("# -thread      -> Use thread to build the FileTree. (default: false)");
