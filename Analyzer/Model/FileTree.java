@@ -168,10 +168,7 @@ public class FileTree extends Analyzer
         {
             DefaultMutableTreeNode next = en.nextElement();
             FileNode file = (FileNode) next.getUserObject();
-            if (file.isFile())
-            {
-                size += file.length();
-            }
+            size += file.length();
         }
         return size;
     }
